@@ -10,3 +10,21 @@ database_id = "33fba40f-abcc-43b1-b931-04baca75462b"
 [vars]
 ENVIRONMENT = "production"
 JWT_SECRET = "your-secret-key-change-this"
+
+# OAuth Configuration
+OAUTH_REDIRECT_URI = "https://ratelimit-api-frontend.pages.dev/auth/callback"
+
+# Google OAuth
+GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "your-google-client-secret"
+
+# GitHub OAuth
+GITHUB_CLIENT_ID = "your-github-client-id"
+GITHUB_CLIENT_SECRET = "your-github-client-secret"
+
+# FrameSphere OAuth (Custom Provider)
+FRAMESPHERE_CLIENT_ID = "your-framesphere-client-id"
+FRAMESPHERE_CLIENT_SECRET = "your-framesphere-client-secret"
+FRAMESPHERE_AUTH_URL = "https://auth.framesphere.com/oauth/authorize"
+FRAMESPHERE_TOKEN_URL = "https://auth.framesphere.com/oauth/token"
+FRAMESPHERE_USERINFO_URL = "https://auth.framesphere.com/oauth/userinfo"

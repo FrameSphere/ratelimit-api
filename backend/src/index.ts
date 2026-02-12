@@ -4,6 +4,14 @@ import { authMiddleware } from './middleware/auth';
 
 // Auth handlers
 import { register, login, getProfile } from './auth/handlers';
+import {
+  googleOAuthInit,
+  googleOAuthCallback,
+  githubOAuthInit,
+  githubOAuthCallback,
+  framesphereOAuthInit,
+  framesphereOAuthCallback
+} from './auth/oauth';
 
 // Rate limit handlers
 import { createApiKey, getApiKeys, deleteApiKey } from './ratelimit/api-keys';
@@ -38,6 +46,14 @@ app.get('/', (c) => {
 // ===== Public Routes =====
 app.post('/auth/register', register);
 app.post('/auth/login', login);
+
+// OAuth Routes
+app.get('/auth/oauth/google', googleOAuthInit);
+app.get('/auth/oauth/google/callback', googleOAuthCallback);
+app.get('/auth/oauth/github', githubOAuthInit);
+app.get('/auth/oauth/github/callback', githubOAuthCallback);
+app.get('/auth/oauth/framesphere', framesphereOAuthInit);
+app.get('/auth/oauth/framesphere/callback', framesphereOAuthCallback);
 
 // Rate limit check endpoint (public, uses API key)
 app.get('/check', checkRateLimit);
