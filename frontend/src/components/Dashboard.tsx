@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { ApiKeyManager } from './ApiKeyManager';
 import { ConfigManager } from './ConfigManager';
 import { Analytics } from './Analytics';
+import { Docs } from './Docs';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -11,7 +12,7 @@ interface DashboardProps {
 export function Dashboard({ onLogout }: DashboardProps) {
   const [user, setUser] = useState<any>(null);
   const [selectedApiKey, setSelectedApiKey] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<'keys' | 'configs' | 'analytics'>('keys');
+  const [activeTab, setActiveTab] = useState<'keys' | 'configs' | 'analytics' | 'docs'>('keys');
 
   useEffect(() => {
     loadProfile();
@@ -96,6 +97,20 @@ export function Dashboard({ onLogout }: DashboardProps) {
             >
               Analytics
             </button>
+            <button
+              onClick={() => setActiveTab('docs')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '1rem',
+                cursor: 'pointer',
+                color: activeTab === 'docs' ? 'var(--primary-color)' : 'var(--text-secondary)',
+                borderBottom: activeTab === 'docs' ? '2px solid var(--primary-color)' : 'none',
+                fontWeight: activeTab === 'docs' ? '600' : '400',
+              }}
+            >
+              📚 Dokumentation
+            </button>
           </div>
         </div>
 
@@ -115,6 +130,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
         {activeTab === 'analytics' && selectedApiKey && (
           <Analytics apiKeyId={selectedApiKey} />
+        )}
+
+        {activeTab === 'docs' && (
+          <Docs />
         )}
       </div>
     </>
