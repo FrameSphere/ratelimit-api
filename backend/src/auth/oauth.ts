@@ -12,7 +12,7 @@ interface OAuthUser {
 // ===== GOOGLE OAUTH =====
 export async function googleOAuthInit(c: Context) {
   const clientId = c.env.GOOGLE_CLIENT_ID;
-  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api-frontend.pages.dev/auth/callback';
+  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimitapi.pages.dev/auth/callback';
   
   const params = new URLSearchParams({
     client_id: clientId,
@@ -31,7 +31,7 @@ export async function googleOAuthCallback(c: Context) {
     const code = c.req.query('code');
     const clientId = c.env.GOOGLE_CLIENT_ID;
     const clientSecret = c.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api-frontend.pages.dev/auth/callback';
+    const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimitapi.pages.dev/auth/callback';
 
     if (!code) {
       return c.json({ error: 'Authorization code missing' }, 400);
@@ -79,7 +79,7 @@ export async function googleOAuthCallback(c: Context) {
 // ===== GITHUB OAUTH =====
 export async function githubOAuthInit(c: Context) {
   const clientId = c.env.GITHUB_CLIENT_ID;
-  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api-frontend.pages.dev/auth/callback';
+  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimitapi.pages.dev/auth/callback';
   
   const params = new URLSearchParams({
     client_id: clientId,
@@ -158,7 +158,7 @@ export async function githubOAuthCallback(c: Context) {
 export async function framesphereOAuthInit(c: Context) {
   const clientId = c.env.FRAMESPHERE_CLIENT_ID;
   const authUrl = c.env.FRAMESPHERE_AUTH_URL || 'https://auth.framesphere.com/oauth/authorize';
-  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api-frontend.pages.dev/auth/callback';
+  const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimitapi.pages.dev/auth/callback';
   
   const params = new URLSearchParams({
     client_id: clientId,
@@ -177,7 +177,7 @@ export async function framesphereOAuthCallback(c: Context) {
     const clientSecret = c.env.FRAMESPHERE_CLIENT_SECRET;
     const tokenUrl = c.env.FRAMESPHERE_TOKEN_URL || 'https://auth.framesphere.com/oauth/token';
     const userInfoUrl = c.env.FRAMESPHERE_USERINFO_URL || 'https://auth.framesphere.com/oauth/userinfo';
-    const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api-frontend.pages.dev/auth/callback';
+    const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimitapi.pages.dev/auth/callback';
 
     if (!code) {
       return c.json({ error: 'Authorization code missing' }, 400);
