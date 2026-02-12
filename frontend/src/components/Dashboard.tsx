@@ -28,7 +28,13 @@ export function Dashboard({ onLogout }: DashboardProps) {
     <>
       <div className="header">
         <div className="header-content">
-          <h1>🚀 RateLimit API Control Center</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 18 0 9 9 0 1 0 -18 0"/>
+              <path d="M12 7v5l3 3"/>
+            </svg>
+            RateLimit API Control Center
+          </h1>
           <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {user && (
               <span style={{ color: 'var(--text-secondary)' }}>

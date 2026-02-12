@@ -49,6 +49,22 @@ export function ApiKeyManager({ onSelectApiKey }: ApiKeyManagerProps) {
     loadApiKeys();
   };
 
+  const handleCopyKey = async (apiKey: string) => {
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      alert('API Key kopiert!');
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = apiKey;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('API Key kopiert!');
+    }
+  };
+
   return (
     <div>
       <div className="card">
@@ -65,19 +81,34 @@ export function ApiKeyManager({ onSelectApiKey }: ApiKeyManagerProps) {
         {newKey && (
           <div className="alert alert-success">
             <strong>API Key erstellt!</strong>
-            <div style={{ marginTop: '0.5rem', fontFamily: 'monospace', fontSize: '0.9rem' }}>
+            <div style={{ 
+              marginTop: '0.5rem', 
+              fontFamily: 'monospace', 
+              fontSize: '0.9rem',
+              wordBreak: 'break-all',
+              padding: '0.5rem',
+              background: 'rgba(0,0,0,0.1)',
+              borderRadius: '4px'
+            }}>
               {newKey}
             </div>
             <small style={{ display: 'block', marginTop: '0.5rem' }}>
               ⚠️ Bitte speichern Sie diesen Key, er wird nur einmal angezeigt!
             </small>
-            <button
-              onClick={() => setNewKey(null)}
-              className="btn btn-sm btn-secondary"
-              style={{ marginTop: '0.5rem' }}
-            >
-              Verstanden
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <button
+                onClick={() => handleCopyKey(newKey)}
+                className="btn btn-sm btn-primary"
+              >
+                📋 Kopieren
+              </button>
+              <button
+                onClick={() => setNewKey(null)}
+                className="btn btn-sm btn-secondary"
+              >
+                Verstanden
+              </button>
+            </div>
           </div>
         )}
 
@@ -127,9 +158,19 @@ export function ApiKeyManager({ onSelectApiKey }: ApiKeyManagerProps) {
                 <tr key={key.id}>
                   <td>{key.key_name}</td>
                   <td>
-                    <code style={{ fontSize: '0.85rem' }}>
-                      {key.api_key.substring(0, 20)}...
-                    </code>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <code style={{ fontSize: '0.85rem' }}>
+                        {key.api_key.substring(0, 20)}...
+                      </code>
+                      <button
+                        onClick={() => handleCopyKey(key.api_key)}
+                        className="btn btn-sm btn-secondary"
+                        title="API Key kopieren"
+                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                      >
+                        📋
+                      </button>
+                    </div>
                   </td>
                   <td>
                     <span className={`badge ${key.is_active ? 'badge-success' : 'badge-danger'}`}>
