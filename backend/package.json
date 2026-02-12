@@ -1,0 +1,25 @@
+{
+  "name": "ratelimit-api-backend",
+  "version": "1.0.0",
+  "description": "Rate Limit API Backend with Cloudflare Workers",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute ratelimit-db --file=./schema.sql",
+    "db:local": "wrangler d1 execute ratelimit-db --local --file=./schema.sql"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hono": "^4.0.0",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240117.0",
+    "wrangler": "^3.25.0",
+    "typescript": "^5.3.3"
+  }
+}
