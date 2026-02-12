@@ -84,8 +84,8 @@ export function ConfigManager({ apiKeyId }: ConfigManagerProps) {
   const handleToggleConfig = async (config: any) => {
     await api.updateConfig(config.id, {
       name: config.name,
-      maxRequests: config.max_requests,
-      windowSeconds: config.window_seconds,
+      max_requests: config.max_requests,
+      window_seconds: config.window_seconds,
       enabled: config.enabled ? 0 : 1,
     });
     loadConfigs();
