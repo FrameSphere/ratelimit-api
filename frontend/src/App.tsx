@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { Dashboard } from './components/Dashboard';
+import { OAuthCallback } from './components/OAuthCallback';
 import { api } from './lib/api';
 
 export default function App() {
@@ -43,19 +45,35 @@ export default function App() {
     );
   }
 
-  if (!isAuthenticated) {
-    return authMode === 'login' ? (
-      <LoginForm
-        onSuccess={handleAuthSuccess}
-        onToggleMode={() => setAuthMode('register')}
-      />
-    ) : (
-      <RegisterForm
-        onSuccess={handleAuthSuccess}
-        onToggleMode={() => setAuthMode('login')}
-      />
-    );
-  }
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* OAuth Callback Route - always accessible */}
+        <Route path="/auth/callback" element={<OAuthCallback />} />
+        
+        {/* Protected Dashboard Route */}
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Dashboard onLogout={handleLogout} />
+            ) : authMode === 'login' ? (
+              <LoginForm
+                onSuccess={handleAuthSuccess}
+                onToggleMode={() => setAuthMode('register')}
+              />
+            ) : (
+              <RegisterForm
+                onSuccess={handleAuthSuccess}
+                onToggleMode={() => setAuthMode('login')}
+              />
+            )
+          }
+        />
 
-  return <Dashboard onLogout={handleLogout} />;
+        {/* Catch all - redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
