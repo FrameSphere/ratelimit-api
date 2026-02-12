@@ -1,16 +1,319 @@
 export function Docs() {
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
-    <div className="container" style={{ maxWidth: '900px', margin: '2rem auto' }}>
-      <div className="card">
-        <h1 style={{ marginBottom: '1rem' }}>📚 RateLimit API Dokumentation</h1>
+    <div style={{ display: 'flex', gap: '2rem', maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+      {/* Sidebar Navigation */}
+      <aside style={{
+        width: '280px',
+        position: 'sticky',
+        top: '2rem',
+        height: 'fit-content',
+        background: 'var(--bg-primary)',
+        border: '1px solid var(--border-color)',
+        borderRadius: '12px',
+        padding: '1.5rem'
+      }}>
+        <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Inhaltsverzeichnis</h3>
+        <nav>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('quickstart')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Quick Start
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('auth')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                Authentifizierung
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('apikeys')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                </svg>
+                API Keys
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('ratelimit')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Rate Limit Check
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('configs')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H5m13.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+                </svg>
+                Konfigurationen
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('filters')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filter
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('analytics')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="20" x2="18" y2="10"/>
+                  <line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+                Analytics
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('examples')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="16 18 22 12 16 6"/>
+                  <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Code Beispiele
+              </button>
+            </li>
+            <li style={{ marginBottom: '0.75rem' }}>
+              <button
+                onClick={() => scrollToSection('errors')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Status Codes
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => scrollToSection('support')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '0.5rem',
+                  cursor: 'pointer',
+                  color: 'var(--text-primary)',
+                  textAlign: 'left',
+                  width: '100%',
+                  borderRadius: '6px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Support
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <div className="card" style={{ flex: 1, minWidth: 0 }}>
+        <h1 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          RateLimit API Dokumentation
+        </h1>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
           Vollständige Anleitung zur Nutzung der RateLimit API
         </p>
 
         {/* Quick Start */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            🚀 Quick Start
+        <section id="quickstart" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+            Quick Start
           </h2>
           <ol style={{ lineHeight: '1.8' }}>
             <li>Registriere dich oder melde dich an</li>
@@ -21,9 +324,13 @@ export function Docs() {
         </section>
 
         {/* Authentication */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            🔐 Authentifizierung
+        <section id="auth" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Authentifizierung
           </h2>
           
           <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Registrierung</h3>
@@ -73,9 +380,12 @@ GET https://ratelimit-api.karol-paschek.workers.dev/auth/oauth/framesphere`}
         </section>
 
         {/* API Keys */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            🔑 API Keys
+        <section id="apikeys" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+            </svg>
+            API Keys
           </h2>
           
           <p style={{ marginBottom: '1rem' }}>
@@ -130,9 +440,13 @@ Authorization: Bearer YOUR_JWT_TOKEN`}
         </section>
 
         {/* Rate Limit Check */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            ⚡ Rate Limit Check
+        <section id="ratelimit" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Rate Limit Check
           </h2>
           
           <p style={{ marginBottom: '1rem' }}>
@@ -175,9 +489,13 @@ Content-Type: application/json
         </section>
 
         {/* Configurations */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            ⚙️ Konfigurationen
+        <section id="configs" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H5m13.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+            </svg>
+            Konfigurationen
           </h2>
 
           <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Konfiguration erstellen</h3>
@@ -225,9 +543,12 @@ Authorization: Bearer YOUR_JWT_TOKEN
         </section>
 
         {/* Filters */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            🔍 Filter
+        <section id="filters" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+            </svg>
+            Filter
           </h2>
 
           <p style={{ marginBottom: '1rem' }}>
@@ -259,9 +580,14 @@ Response:
         </section>
 
         {/* Analytics */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            📊 Analytics
+        <section id="analytics" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Analytics
           </h2>
 
           <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Analytics abrufen</h3>
@@ -294,9 +620,13 @@ Authorization: Bearer YOUR_JWT_TOKEN`}
         </section>
 
         {/* Integration Examples */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            💻 Integration Beispiele
+        <section id="examples" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+            Integration Beispiele
           </h2>
 
           <h3 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Node.js / Express</h3>
@@ -391,9 +721,14 @@ if (!allowed) {
         </section>
 
         {/* Error Codes */}
-        <section style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            ⚠️ HTTP Status Codes
+        <section id="errors" style={{ marginBottom: '3rem', scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            HTTP Status Codes
           </h2>
           
           <table className="table">
@@ -441,9 +776,12 @@ if (!allowed) {
         </section>
 
         {/* Support */}
-        <section>
-          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)' }}>
-            💬 Support
+        <section id="support" style={{ scrollMarginTop: '2rem' }}>
+          <h2 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Support
           </h2>
           <p style={{ marginBottom: '0.5rem' }}>
             Bei Fragen oder Problemen kontaktiere uns:
