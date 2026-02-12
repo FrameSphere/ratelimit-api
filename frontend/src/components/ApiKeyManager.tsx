@@ -35,7 +35,7 @@ export function ApiKeyManager({ onSelectApiKey }: ApiKeyManagerProps) {
     }
 
     if (data?.apiKey) {
-      setNewKey(data.apiKey.apiKey);
+      setNewKey(data.apiKey.api_key);
       setKeyName('');
       setShowCreateForm(false);
       loadApiKeys();

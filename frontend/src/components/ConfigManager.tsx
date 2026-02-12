@@ -86,7 +86,7 @@ export function ConfigManager({ apiKeyId }: ConfigManagerProps) {
       name: config.name,
       maxRequests: config.max_requests,
       windowSeconds: config.window_seconds,
-      enabled: !config.enabled,
+      enabled: config.enabled ? 0 : 1,
     });
     loadConfigs();
   };
