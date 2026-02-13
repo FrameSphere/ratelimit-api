@@ -28,6 +28,7 @@ export function LoginForm({ onSuccess, onToggleMode }: LoginFormProps) {
     if (data?.token) {
       api.setToken(data.token);
       onSuccess();
+      window.location.href = '/dashboard';
     }
 
     setLoading(false);

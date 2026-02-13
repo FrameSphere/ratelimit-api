@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Disallow authentication pages from indexing
+Disallow: /auth/
+Disallow: /login
+Disallow: /register
+Disallow: /dashboard
+
+# Sitemap
+Sitemap: https://ratelimit-api.pages.dev/sitemap.xml

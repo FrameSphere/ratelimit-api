@@ -1,4 +1,6 @@
 export function HomePage() {
+  const isLoggedIn = !!localStorage.getItem('token');
+
   return (
     <div style={{ minHeight: '100vh', background: '#0f172a', position: 'relative', overflow: 'hidden' }}>
       {/* Animated Background Gradients */}
@@ -59,8 +61,14 @@ export function HomePage() {
             <span style={{ fontSize: '1.5rem', fontWeight: '700', color: 'white' }}>RateLimit API</span>
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <a href="/login" className="btn btn-secondary">Anmelden</a>
-            <a href="/register" className="btn btn-primary">Kostenlos starten</a>
+            {isLoggedIn ? (
+              <a href="/dashboard" className="btn btn-primary">Dashboard</a>
+            ) : (
+              <>
+                <a href="/login" className="btn btn-secondary">Anmelden</a>
+                <a href="/register" className="btn btn-primary">Kostenlos starten</a>
+              </>
+            )}
           </div>
         </nav>
 

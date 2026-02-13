@@ -49,9 +49,9 @@ export function OAuthCallback() {
           api.setToken(data.token);
           setStatus('success');
           
-          // Redirect to dashboard after 1 second
+          // Redirect to dashboard with full page reload
           setTimeout(() => {
-            navigate('/dashboard');
+            window.location.href = '/dashboard';
           }, 1000);
         } else {
           throw new Error('Kein Token erhalten');

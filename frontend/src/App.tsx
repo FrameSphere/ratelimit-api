@@ -30,7 +30,6 @@ export default function App() {
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
-    window.location.href = '/dashboard';
   };
 
   const handleLogout = () => {

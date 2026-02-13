@@ -29,6 +29,7 @@ export function RegisterForm({ onSuccess, onToggleMode }: RegisterFormProps) {
     if (data?.token) {
       api.setToken(data.token);
       onSuccess();
+      window.location.href = '/dashboard';
     }
 
     setLoading(false);
