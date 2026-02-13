@@ -11,12 +11,37 @@ interface DashboardProps {
 
 export function Dashboard({ onLogout }: DashboardProps) {
   const [user, setUser] = useState<any>(null);
-  const [selectedApiKey, setSelectedApiKey] = useState<number | null>(null);
+  const [selectedApiKey, setSelectedApiKey] = useState<number | null>(() => {
+    const saved = localStorage.getItem('selectedApiKey');
+    return saved ? parseInt(saved) : null;
+  });
+  const [selectedApiKeyName, setSelectedApiKeyName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'keys' | 'configs' | 'analytics' | 'docs'>('keys');
 
   useEffect(() => {
     loadProfile();
   }, []);
+
+  useEffect(() => {
+    if (selectedApiKey) {
+      localStorage.setItem('selectedApiKey', selectedApiKey.toString());
+      loadApiKeyName();
+    } else {
+      localStorage.removeItem('selectedApiKey');
+      setSelectedApiKeyName('');
+    }
+  }, [selectedApiKey]);
+
+  const loadApiKeyName = async () => {
+    if (!selectedApiKey) return;
+    const { data } = await api.getApiKeys();
+    if (data?.apiKeys) {
+      const key = data.apiKeys.find((k: any) => k.id === selectedApiKey);
+      if (key) {
+        setSelectedApiKeyName(key.key_name);
+      }
+    }
+  };
 
   const loadProfile = async () => {
     const { data } = await api.getProfile();
@@ -129,6 +154,37 @@ export function Dashboard({ onLogout }: DashboardProps) {
               setActiveTab('configs');
             }}
           />
+        )}
+
+        {(activeTab === 'configs' || activeTab === 'analytics') && selectedApiKey && (
+          <div className="alert" style={{
+            background: 'rgba(59, 130, 246, 0.1)',
+            border: '1px solid var(--primary-color)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+              </svg>
+              <span>
+                Ausgewählter API Key: <strong>{selectedApiKeyName || `Key #${selectedApiKey}`}</strong>
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                setSelectedApiKey(null);
+                setActiveTab('keys');
+              }}
+              className="btn btn-sm btn-secondary"
+            >
+              Anderen Key wählen
+            </button>
+          </div>
         )}
 
         {activeTab === 'configs' && selectedApiKey && (

@@ -4,11 +4,11 @@ import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { Dashboard } from './components/Dashboard';
 import { OAuthCallback } from './components/OAuthCallback';
+import { HomePage } from './components/HomePage';
 import { api } from './lib/api';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,30 +48,33 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* OAuth Callback Route - always accessible */}
+        {/* OAuth Callback Route */}
         <Route path="/auth/callback" element={<OAuthCallback />} />
+        
+        {/* Public Routes */}
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <HomePage />} />
+        <Route path="/login" element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <LoginForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/register'} />
+          )
+        } />
+        <Route path="/register" element={
+          isAuthenticated ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <RegisterForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/login'} />
+          )
+        } />
         
         {/* Protected Dashboard Route */}
         <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Dashboard onLogout={handleLogout} />
-            ) : authMode === 'login' ? (
-              <LoginForm
-                onSuccess={handleAuthSuccess}
-                onToggleMode={() => setAuthMode('register')}
-              />
-            ) : (
-              <RegisterForm
-                onSuccess={handleAuthSuccess}
-                onToggleMode={() => setAuthMode('login')}
-              />
-            )
-          }
+          path="/dashboard"
+          element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
 
-        {/* Catch all - redirect to home */}
+        {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

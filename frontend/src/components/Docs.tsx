@@ -295,7 +295,7 @@ export function Docs() {
       </aside>
 
       {/* Main Content */}
-      <div className="card" style={{ flex: 1, minWidth: 0 }}>
+      <div className="card docs-content" style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
