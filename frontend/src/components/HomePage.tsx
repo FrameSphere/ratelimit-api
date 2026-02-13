@@ -647,7 +647,7 @@ app.use(async (req, res, next) => {
               <a href="https://github.com/FrameSphere/ratelimit-api" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>GitHub</a>
             </div>
             <div style={{ fontSize: '0.9rem' }}>
-              © 2024 RateLimit API. Powered by Cloudflare Workers.
+              © 2024 RateLimit API. Powered by{' '}<a href="https://frame-sphere.vercel.app" className="footer-link" target="_blank" rel="noopener noreferrer">FrameSphere</a>.
             </div>
           </div>
         </footer>

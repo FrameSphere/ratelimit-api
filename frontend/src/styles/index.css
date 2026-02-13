@@ -368,6 +368,17 @@ body {
   color: #6ee7b7;
 }
 
+/*footer*/
+.footer-link {
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: #5865f2;
+}
+
 /* Loading */
 .loading {
   display: flex;
