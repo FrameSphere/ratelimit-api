@@ -52,7 +52,7 @@ export default function App() {
         <Route path="/auth/callback" element={<OAuthCallback />} />
         
         {/* Public Routes */}
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <HomePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={
           isAuthenticated ? (
             <Navigate to="/dashboard" replace />
