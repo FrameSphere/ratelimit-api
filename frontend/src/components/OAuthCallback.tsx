@@ -51,7 +51,7 @@ export function OAuthCallback() {
           
           // Redirect to dashboard after 1 second
           setTimeout(() => {
-            navigate('/');
+            navigate('/dashboard');
           }, 1000);
         } else {
           throw new Error('Kein Token erhalten');
@@ -98,7 +98,7 @@ export function OAuthCallback() {
               {error}
             </div>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/login')}
               className="btn btn-primary"
               style={{ marginTop: '1rem' }}
             >
