@@ -652,6 +652,8 @@ app.use(async (req, res, next) => {
               <a href="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Anmelden</a>
               <a href="/register" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Registrieren</a>
               <a href="/dashboard" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Dashboard</a>
+              <a href="/impressum" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Impressum</a>
+              <a href="/datenschutz" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Datenschutz</a>
               <a href="https://github.com/FrameSphere/ratelimit-api" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>GitHub</a>
             </div>
             <div style={{ fontSize: '0.9rem' }}>
