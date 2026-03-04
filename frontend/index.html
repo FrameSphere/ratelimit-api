@@ -14,67 +14,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary Meta Tags -->
-    <title>RateLimit API - Professionelles Rate Limiting für moderne APIs</title>
-    <meta name="title" content="RateLimit API - Professionelles Rate Limiting für moderne APIs" />
-    <meta name="description" content="Schütze deine APIs vor Missbrauch und Überlastung mit RateLimit API. Einfache Integration, Echtzeit-Kontrolle und detaillierte Analytics. Läuft auf Cloudflare Workers Edge Network." />
-    <meta name="keywords" content="rate limiting, api rate limit, rate limiter, api schutz, cloudflare workers, api security, ddos protection, api throttling, request limiting" />
+    <title>API Rate Limiting Service mit Cloudflare Workers | RateLimit API</title>
+    <meta name="title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
+    <meta name="description" content="API Rate Limiting Service auf Cloudflare Workers Edge Network. Schütze deine APIs vor Missbrauch, DDoS und Überlastung – mit Token Bucket, IP-Filter und Echtzeit-Analytics. Kostenlos starten." />
+    <meta name="keywords" content="api rate limiting, rate limiting service, cloudflare workers rate limit, api throttling, api schutz, ddos protection api, token bucket algorithm, rate limiter saas, api security cloudflare, request limiting tool, ip blacklist api, api rate limit tool" />
     <meta name="author" content="RateLimit API" />
     <meta name="robots" content="index, follow" />
+    <meta name="language" content="de" />
+    <meta name="revisit-after" content="7 days" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://ratelimit-api.pages.dev/" />
-    <meta property="og:title" content="RateLimit API - Professionelles Rate Limiting für moderne APIs" />
-    <meta property="og:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Einfache Integration, leistungsstarke Kontrolle und detaillierte Analytics – alles in einer Lösung." />
+    <meta property="og:title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
+    <meta property="og:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Token Bucket, IP-Filter, Echtzeit-Analytics – alles auf Cloudflare Edge. Kostenlos starten." />
     <meta property="og:image" content="https://ratelimit-api.pages.dev/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="RateLimit API – API Rate Limiting Service" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:site_name" content="RateLimit API" />
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://ratelimit-api.pages.dev/" />
-    <meta property="twitter:title" content="RateLimit API - Professionelles Rate Limiting für moderne APIs" />
-    <meta property="twitter:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Einfache Integration, leistungsstarke Kontrolle und detaillierte Analytics – alles in einer Lösung." />
-    <meta property="twitter:image" content="https://ratelimit-api.pages.dev/og-image.png" />
-    
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@ratelimitapi" />
+    <meta name="twitter:url" content="https://ratelimit-api.pages.dev/" />
+    <meta name="twitter:title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
+    <meta name="twitter:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Token Bucket, IP-Filter, Echtzeit-Analytics – alles auf Cloudflare Edge." />
+    <meta name="twitter:image" content="https://ratelimit-api.pages.dev/og-image.png" />
+    <meta name="twitter:image:alt" content="RateLimit API Dashboard" />
+
     <!-- Additional SEO -->
     <link rel="canonical" href="https://ratelimit-api.pages.dev/" />
     <meta name="theme-color" content="#3b82f6" />
     <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Structured Data (JSON-LD) -->
+
+    <!-- Structured Data – WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "RateLimit API",
+      "url": "https://ratelimit-api.pages.dev",
+      "description": "API Rate Limiting Service auf Cloudflare Workers – Token Bucket, IP-Filter, Analytics",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://ratelimit-api.pages.dev/faq",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Structured Data – SoftwareApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "RateLimit API",
       "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web",
+      "applicationSubCategory": "API Security Tool",
+      "operatingSystem": "Web, Cloud",
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "EUR"
+        "priceCurrency": "EUR",
+        "description": "Kostenlos starten – kein Kreditkarte erforderlich"
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "127"
-      },
-      "description": "Professionelles Rate Limiting für moderne APIs. Schütze deine APIs vor Missbrauch und Überlastung mit Echtzeit-Kontrolle und Analytics.",
-      "screenshot": "https://ratelimit-api.pages.dev/screenshot.png",
+      "description": "API Rate Limiting Service auf Cloudflare Workers Edge Network. Schütze APIs vor Missbrauch mit Token Bucket Algorithmus, IP-Blacklisting und Echtzeit-Analytics.",
       "featureList": [
-        "Echtzeit Rate Limit Kontrolle",
+        "Token Bucket Rate Limiting Algorithmus",
         "IP Blacklisting und Whitelisting",
-        "Detaillierte Analytics und Logs",
-        "Multi-Konfiguration Support",
-        "Cloudflare Workers Edge Performance",
-        "OAuth Integration"
+        "Echtzeit Rate Limit Kontrolle ohne Deployment",
+        "Detaillierte Analytics und Request-Logs",
+        "Cloudflare Workers Edge Network – unter 10ms Latenz",
+        "JWT und OAuth Integration",
+        "Multi-API-Key Support",
+        "User-Agent Filter"
       ],
       "url": "https://ratelimit-api.pages.dev",
+      "screenshot": "https://ratelimit-api.pages.dev/screenshot.png",
       "creator": {
         "@type": "Organization",
-        "name": "RateLimit API"
+        "name": "RateLimit API",
+        "url": "https://ratelimit-api.pages.dev"
       }
+    }
+    </script>
+
+    <!-- Structured Data – FAQ (für Google Rich Results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Was ist API Rate Limiting?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "API Rate Limiting begrenzt die Anzahl von Anfragen an eine API pro Zeiteinheit. Ohne Rate Limiting kann jeder Client beliebig viele Anfragen senden, was zu Überlastung, Sicherheitsproblemen und explodierende Kosten führt. Rate Limiting setzt eine Obergrenze (z.B. 100 req/min) und antwortet bei Überschreitung mit HTTP 429."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Wie integriere ich RateLimit API in meine Anwendung?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Die Integration dauert ca. 5 Minuten: API Key erstellen, im Dashboard das Rate Limit konfigurieren, dann einen HTTP-Check-Request vor jeder API-Anfrage senden und das 'allowed'-Feld auswerten. Kein SDK, keine Library nötig."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Welchen Rate-Limiting-Algorithmus verwendet RateLimit API?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RateLimit API verwendet den Token-Bucket-Algorithmus. Dieser erlaubt kurze natürliche Bursts ohne das Gesamtlimit zu überschreiten. Jeder API-Key hat einen Eimer mit Tokens, der sich kontinuierlich auffüllt."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Ist RateLimit API DSGVO-konform?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ja. Die Hauptdatenbank liegt in der EU-Region auf Cloudflare D1. Request-Logs enthalten nur IP-Adresse, Endpoint, Timestamp und Blocked-Flag – keine personenbezogenen Daten der Endnutzer."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Was ist der Unterschied zwischen RateLimit API und Upstash?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Upstash Rate Limiting ist eine Low-Level-Library für eigene Cloudflare Workers. RateLimit API ist ein fertiger Managed Service mit Dashboard, IP-Filtern und Analytics – ohne eigenen Code."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data – BreadcrumbList (Sitelinks) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ratelimit-api.pages.dev/" },
+        { "@type": "ListItem", "position": 2, "name": "Changelog", "item": "https://ratelimit-api.pages.dev/changelog" },
+        { "@type": "ListItem", "position": 3, "name": "FAQ", "item": "https://ratelimit-api.pages.dev/faq" },
+        { "@type": "ListItem", "position": 4, "name": "Vergleich", "item": "https://ratelimit-api.pages.dev/vergleich" },
+        { "@type": "ListItem", "position": 5, "name": "Docs", "item": "https://ratelimit-api.pages.dev/dashboard" }
+      ]
     }
     </script>
   </head>

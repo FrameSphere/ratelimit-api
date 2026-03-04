@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getLatestChangelog } from '../lib/hq';
+import { SeoSection } from './SeoSection';
 
 const TYPE_ICON:  Record<string, string> = { feature:'✨', fix:'🐛', improvement:'⚡', security:'🔒', breaking:'💥' };
 const TYPE_COLOR: Record<string, string> = {
@@ -247,6 +248,9 @@ export function HomePage() {
             ))}
           </div>
         </div>
+
+        {/* ── SEO Content Section ── */}
+        <SeoSection />
 
         {/* ── CTA ── */}
         <div style={{ maxWidth: '1000px', margin: '0 auto 8rem', padding: '0 2rem' }}>

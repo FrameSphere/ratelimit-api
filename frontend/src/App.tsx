@@ -6,6 +6,11 @@ import { Dashboard } from './components/Dashboard';
 import { OAuthCallback } from './components/OAuthCallback';
 import { HomePage } from './components/HomePage';
 import { ChangelogPage } from './components/ChangelogPage';
+import { FaqPage } from './components/FaqPage';
+import { VergleichPage } from './components/VergleichPage';
+import { CloudflareGuide } from './components/blog/CloudflareGuide';
+import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
+import { UseCasesGuide } from './components/blog/UseCasesGuide';
 import { api } from './lib/api';
 
 export default function App() {
@@ -45,6 +50,11 @@ export default function App() {
         {/* Public */}
         <Route path="/"          element={<HomePage />} />
         <Route path="/changelog" element={<ChangelogPage />} />
+        <Route path="/faq"       element={<FaqPage />} />
+        <Route path="/vergleich" element={<VergleichPage />} />
+        <Route path="/blog/cloudflare-rate-limiting"  element={<CloudflareGuide />} />
+        <Route path="/blog/rate-limiting-algorithms"  element={<AlgorithmsGuide />} />
+        <Route path="/blog/api-use-cases"             element={<UseCasesGuide />} />
 
         <Route path="/login" element={
           isAuthenticated
