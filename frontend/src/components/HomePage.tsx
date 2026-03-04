@@ -284,6 +284,12 @@ export function HomePage() {
         </footer>
       </div>
 
+      export default function TestComponent() {
+      const obj: any = undefined;
+
+      return <div>{obj.test}</div>;
+}
+
       <style>{`
         @keyframes float {
           0%,100% { transform: translate(0,0) scale(1); }
