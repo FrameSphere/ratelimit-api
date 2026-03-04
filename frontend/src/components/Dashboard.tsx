@@ -4,10 +4,13 @@ import { ApiKeyManager } from './ApiKeyManager';
 import { ConfigManager } from './ConfigManager';
 import { Analytics } from './Analytics';
 import { Docs } from './Docs';
+import { SupportTab } from './SupportTab';
 
 interface DashboardProps {
   onLogout: () => void;
 }
+
+type TabId = 'keys' | 'configs' | 'analytics' | 'docs' | 'support';
 
 export function Dashboard({ onLogout }: DashboardProps) {
   const [user, setUser] = useState<any>(null);
@@ -16,11 +19,9 @@ export function Dashboard({ onLogout }: DashboardProps) {
     return saved ? parseInt(saved) : null;
   });
   const [selectedApiKeyName, setSelectedApiKeyName] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'keys' | 'configs' | 'analytics' | 'docs'>('keys');
+  const [activeTab, setActiveTab] = useState<TabId>('keys');
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useEffect(() => { loadProfile(); }, []);
 
   useEffect(() => {
     if (selectedApiKey) {
@@ -37,41 +38,52 @@ export function Dashboard({ onLogout }: DashboardProps) {
     const { data } = await api.getApiKeys();
     if (data?.apiKeys) {
       const key = data.apiKeys.find((k: any) => k.id === selectedApiKey);
-      if (key) {
-        setSelectedApiKeyName(key.key_name);
-      }
+      if (key) setSelectedApiKeyName(key.key_name);
     }
   };
 
   const loadProfile = async () => {
     const { data } = await api.getProfile();
-    if (data?.user) {
-      setUser(data.user);
-    }
+    if (data?.user) setUser(data.user);
   };
+
+  // ── Tab button style helper ──────────────────────────────────
+  const tabStyle = (id: TabId): React.CSSProperties => ({
+    background: 'none',
+    border: 'none',
+    padding: '1rem 0.25rem',
+    cursor: 'pointer',
+    color: activeTab === id ? 'var(--primary-color)' : 'var(--text-secondary)',
+    borderBottom: activeTab === id ? '2px solid var(--primary-color)' : '2px solid transparent',
+    fontWeight: activeTab === id ? '600' : '400',
+    fontSize: '0.9rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.4rem',
+    transition: 'color .15s',
+    whiteSpace: 'nowrap' as const,
+  });
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="header">
         <div className="header-content">
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-            RateLimit API Control Center
+            RateLimit API
           </h1>
-          <nav style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <nav style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             {user && (
-              <span style={{ color: 'var(--text-secondary)' }}>
-                {user.name}
-              </span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{user.name}</span>
             )}
+            <a href="/changelog" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}>
+              📋 Changelog
+            </a>
             <a href="/" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.35rem' }}>
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-              </svg>
               Home
             </a>
             <button onClick={onLogout} className="btn btn-secondary btn-sm">
@@ -82,116 +94,91 @@ export function Dashboard({ onLogout }: DashboardProps) {
       </div>
 
       <div className="container">
-        {/* Tabs */}
+        {/* ── Tabs ── */}
         <div style={{ marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
-          <div style={{ display: 'flex', gap: '2rem' }}>
-            <button
-              onClick={() => setActiveTab('keys')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '1rem',
-                cursor: 'pointer',
-                color: activeTab === 'keys' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                borderBottom: activeTab === 'keys' ? '2px solid var(--primary-color)' : 'none',
-                fontWeight: activeTab === 'keys' ? '600' : '400',
-              }}
-            >
+          <div style={{ display: 'flex', gap: '1.5rem', overflowX: 'auto' }}>
+
+            <button style={tabStyle('keys')} onClick={() => setActiveTab('keys')}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+              </svg>
               API Keys
             </button>
-            <button
-              onClick={() => setActiveTab('configs')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '1rem',
-                cursor: 'pointer',
-                color: activeTab === 'configs' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                borderBottom: activeTab === 'configs' ? '2px solid var(--primary-color)' : 'none',
-                fontWeight: activeTab === 'configs' ? '600' : '400',
-              }}
-              disabled={!selectedApiKey}
-            >
+
+            <button style={tabStyle('configs')} onClick={() => setActiveTab('configs')} disabled={!selectedApiKey}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 5.46 5.46"/>
+                <path d="M4.93 19.07A10 10 0 0 0 18.54 18.54"/>
+                <path d="M15.5 2.1A10 10 0 0 0 2.1 15.5"/>
+                <path d="M8.5 21.9A10 10 0 0 0 21.9 8.5"/>
+              </svg>
               Konfigurationen
             </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '1rem',
-                cursor: 'pointer',
-                color: activeTab === 'analytics' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                borderBottom: activeTab === 'analytics' ? '2px solid var(--primary-color)' : 'none',
-                fontWeight: activeTab === 'analytics' ? '600' : '400',
-              }}
-              disabled={!selectedApiKey}
-            >
+
+            <button style={tabStyle('analytics')} onClick={() => setActiveTab('analytics')} disabled={!selectedApiKey}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
               Analytics
             </button>
-            <button
-              onClick={() => setActiveTab('docs')}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: '1rem',
-                cursor: 'pointer',
-                color: activeTab === 'docs' ? 'var(--primary-color)' : 'var(--text-secondary)',
-                borderBottom: activeTab === 'docs' ? '2px solid var(--primary-color)' : 'none',
-                fontWeight: activeTab === 'docs' ? '600' : '400',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+            <button style={tabStyle('support')} onClick={() => setActiveTab('support')}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Support
+            </button>
+
+            <button style={tabStyle('docs')} onClick={() => setActiveTab('docs')}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
               </svg>
               Dokumentation
             </button>
+
           </div>
         </div>
 
-        {/* Tab Content */}
-        {activeTab === 'keys' && (
-          <ApiKeyManager 
-            onSelectApiKey={(id) => {
-              setSelectedApiKey(id);
-              setActiveTab('configs');
-            }}
-          />
-        )}
-
+        {/* ── API Key context banner ── */}
         {(activeTab === 'configs' || activeTab === 'analytics') && selectedApiKey && (
-          <div className="alert" style={{
-            background: 'rgba(59, 130, 246, 0.1)',
-            border: '1px solid var(--primary-color)',
-            borderRadius: '8px',
-            padding: '1rem',
+          <div style={{
+            background: 'rgba(59,130,246,0.08)',
+            border: '1px solid rgba(59,130,246,0.3)',
+            borderRadius: 8,
+            padding: '0.875rem 1rem',
             marginBottom: '1.5rem',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2">
                 <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
               </svg>
-              <span>
-                Ausgewählter API Key: <strong>{selectedApiKeyName || `Key #${selectedApiKey}`}</strong>
+              <span style={{ fontSize: '0.9rem' }}>
+                API Key: <strong>{selectedApiKeyName || `#${selectedApiKey}`}</strong>
               </span>
             </div>
             <button
-              onClick={() => {
-                setSelectedApiKey(null);
-                setActiveTab('keys');
-              }}
+              onClick={() => { setSelectedApiKey(null); setActiveTab('keys'); }}
               className="btn btn-sm btn-secondary"
             >
               Anderen Key wählen
             </button>
           </div>
+        )}
+
+        {/* ── Tab content ── */}
+        {activeTab === 'keys' && (
+          <ApiKeyManager
+            onSelectApiKey={(id) => {
+              setSelectedApiKey(id);
+              setActiveTab('configs');
+            }}
+          />
         )}
 
         {activeTab === 'configs' && selectedApiKey && (
@@ -202,8 +189,30 @@ export function Dashboard({ onLogout }: DashboardProps) {
           <Analytics apiKeyId={selectedApiKey} />
         )}
 
+        {activeTab === 'support' && (
+          <SupportTab user={user} />
+        )}
+
         {activeTab === 'docs' && (
           <Docs />
+        )}
+
+        {/* Hint when key-dependent tab is active but no key selected */}
+        {(activeTab === 'configs' || activeTab === 'analytics') && !selectedApiKey && (
+          <div style={{
+            textAlign: 'center', padding: '3rem',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 12,
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔑</div>
+            <div style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              Bitte zuerst einen API Key auswählen.
+            </div>
+            <button className="btn btn-primary" onClick={() => setActiveTab('keys')}>
+              Zu API Keys →
+            </button>
+          </div>
         )}
       </div>
     </>

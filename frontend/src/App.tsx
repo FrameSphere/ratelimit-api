@@ -5,6 +5,7 @@ import { RegisterForm } from './components/RegisterForm';
 import { Dashboard } from './components/Dashboard';
 import { OAuthCallback } from './components/OAuthCallback';
 import { HomePage } from './components/HomePage';
+import { ChangelogPage } from './components/ChangelogPage';
 import { api } from './lib/api';
 
 export default function App() {
@@ -28,47 +29,35 @@ export default function App() {
     setLoading(false);
   };
 
-  const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    api.clearToken();
-    setIsAuthenticated(false);
-  };
+  const handleAuthSuccess = () => setIsAuthenticated(true);
+  const handleLogout = () => { api.clearToken(); setIsAuthenticated(false); };
 
   if (loading) {
-    return (
-      <div className="loading" style={{ minHeight: '100vh' }}>
-        Lädt...
-      </div>
-    );
+    return <div className="loading" style={{ minHeight: '100vh' }}>Lädt…</div>;
   }
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* OAuth Callback Route */}
+        {/* OAuth */}
         <Route path="/auth/callback" element={<OAuthCallback />} />
-        
-        {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
+
+        {/* Public */}
+        <Route path="/"          element={<HomePage />} />
+        <Route path="/changelog" element={<ChangelogPage />} />
+
         <Route path="/login" element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <LoginForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/register'} />
-          )
+          isAuthenticated
+            ? <Navigate to="/dashboard" replace />
+            : <LoginForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/register'} />
         } />
         <Route path="/register" element={
-          isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <RegisterForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/login'} />
-          )
+          isAuthenticated
+            ? <Navigate to="/dashboard" replace />
+            : <RegisterForm onSuccess={handleAuthSuccess} onToggleMode={() => window.location.href = '/login'} />
         } />
-        
-        {/* Protected Dashboard Route */}
+
+        {/* Protected */}
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
