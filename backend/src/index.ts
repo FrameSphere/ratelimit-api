@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { corsMiddleware } from './middleware/cors';
 import { authMiddleware } from './middleware/auth';
+import { reportErrorToHQ, notifyHQ } from './hq-reporter';
 
 // Auth handlers
 import { register, login, getProfile } from './auth/handlers';
@@ -86,4 +87,20 @@ app.delete('/api/filters/:id', deleteFilter);
 app.get('/api/analytics/:apiKeyId', getAnalytics);
 app.get('/api/logs/:apiKeyId', getRecentLogs);
 
-export default app;
+export default {
+  async fetch(request: Request, env: any, ctx: ExecutionContext): Promise<Response> {
+    try {
+      return await app.fetch(request, env, ctx);
+    } catch (err: any) {
+      // Report unhandled exceptions to WebControl HQ
+      reportErrorToHQ(env, 'UnhandledError', err?.message || String(err), {
+        stack: err?.stack,
+        path:  new URL(request.url).pathname,
+      });
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  },
+};

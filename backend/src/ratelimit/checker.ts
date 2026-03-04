@@ -1,4 +1,5 @@
 import { Context } from 'hono';
+import { reportErrorToHQ } from '../hq-reporter';
 
 interface RateLimitResult {
   allowed: boolean;
@@ -82,8 +83,13 @@ export async function checkRateLimit(c: Context) {
     };
 
     return c.json(result, allowed ? 200 : 429);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Rate limit check error:', error);
+    reportErrorToHQ(c.env, 'RateLimitCheckError', error?.message || String(error), {
+      stack: error?.stack,
+      path:  c.req.path,
+      statusCode: 500,
+    });
     return c.json({ error: 'Internal server error' }, 500);
   }
 }

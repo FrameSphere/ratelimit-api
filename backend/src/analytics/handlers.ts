@@ -1,4 +1,5 @@
 import { Context } from 'hono';
+import { reportErrorToHQ } from '../hq-reporter';
 
 export async function getAnalytics(c: Context) {
   try {
@@ -73,8 +74,9 @@ export async function getAnalytics(c: Context) {
       topEndpoints,
       topIps
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get analytics error:', error);
+    reportErrorToHQ(c.env, 'AnalyticsError', error?.message || String(error), { stack: error?.stack, path: c.req.path });
     return c.json({ error: 'Internal server error' }, 500);
   }
 }
@@ -110,8 +112,9 @@ export async function getRecentLogs(c: Context) {
     `).bind(apiKeyId, limit).all();
 
     return c.json({ logs: results });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get recent logs error:', error);
+    reportErrorToHQ(c.env, 'LogsError', error?.message || String(error), { stack: error?.stack, path: c.req.path });
     return c.json({ error: 'Internal server error' }, 500);
   }
 }

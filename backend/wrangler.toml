@@ -11,6 +11,11 @@ database_id = "33fba40f-abcc-43b1-b931-04baca75462b"
 ENVIRONMENT = "production"
 JWT_SECRET = "your-secret-key-change-this"
 
+# WebControl HQ – Error-Reporting
+HQ_API_URL = "https://webcontrol-hq-api.karol-paschek.workers.dev"
+HQ_SITE_ID = "ratelimit"
+# HQ_AUTH_TOKEN wird als Secret gesetzt: npx wrangler secret put HQ_AUTH_TOKEN
+
 # OAuth Configuration
 OAUTH_REDIRECT_URI = "https://ratelimit-api.pages.dev/auth/callback"
 
