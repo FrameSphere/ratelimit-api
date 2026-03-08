@@ -253,7 +253,7 @@ export function HomePage() {
         <SeoSection />
 
         {/* ── CTA ── */}
-        <div style={{ maxWidth: '1000px', margin: '0 auto 8rem', padding: '0 2rem' }}>
+        <div style={{ maxWidth: '1000px', margin: '3.5rem auto 8rem', padding: '0 2rem' }}>
           <div style={{ background: 'linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1),rgba(236,72,153,0.1))', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 24, padding: '3.5rem 2.5rem', textAlign: 'center' }}>
             <a href="/register" style={{ display: 'inline-block', fontSize: '1.25rem', padding: '1rem 3rem', textDecoration: 'none', borderRadius: 12, fontWeight: 800, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', boxShadow: '0 10px 40px -10px rgba(59,130,246,0.5)', marginBottom: '1.75rem' }}>
               Kostenlos starten →
