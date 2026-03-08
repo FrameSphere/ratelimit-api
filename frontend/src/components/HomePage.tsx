@@ -255,18 +255,23 @@ export function HomePage() {
         {/* ── CTA ── */}
         <div style={{ maxWidth: '1000px', margin: '0 auto 8rem', padding: '0 2rem' }}>
           <div style={{ background: 'linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1),rgba(236,72,153,0.1))', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 24, padding: '3.5rem 2.5rem', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '2.25rem', fontWeight: '700', marginBottom: '0.75rem', color: 'white' }}>Kostenlos starten</h2>
-            <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', maxWidth: 520, margin: '0 auto 2rem', lineHeight: 1.6 }}>
-              Keine Kreditkarte erforderlich. Upgrade jederzeit möglich.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="/register" style={{ fontSize: '1.1rem', padding: '0.9rem 2.5rem', textDecoration: 'none', borderRadius: 10, fontWeight: 700, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', boxShadow: '0 10px 40px -10px rgba(59,130,246,0.5)' }}>
-                Jetzt durchstarten →
-              </a>
-              <a href="/changelog" style={{ fontSize: '1.1rem', padding: '0.9rem 2.5rem', textDecoration: 'none', borderRadius: 10, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.1)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Changelog
-              </a>
+            <a href="/register" style={{ display: 'inline-block', fontSize: '1.25rem', padding: '1rem 3rem', textDecoration: 'none', borderRadius: 12, fontWeight: 800, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', boxShadow: '0 10px 40px -10px rgba(59,130,246,0.5)', marginBottom: '1.75rem' }}>
+              Kostenlos starten →
+            </a>
+            <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', marginBottom: '0.6rem' }}>Weitere Infos:</p>
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
+              <a href="/faq" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
+                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>FAQ ansehen</a>
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
+              <a href="/vergleich" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
+                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>Tool-Vergleich</a>
+              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
+              <a href="/changelog" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
+                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>Changelog</a>
             </div>
           </div>
         </div>

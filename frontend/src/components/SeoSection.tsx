@@ -200,8 +200,11 @@ export function SeoSection() {
           <h3 style={{ color: 'white', fontWeight: 800, fontSize: '1.3rem', marginBottom: '0.5rem' }}>
             Bereit loszulegen?
           </h3>
-          <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-            Kostenlos starten – keine Kreditkarte, keine Laufzeiten. API Key in 2 Minuten.
+          <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '0.75rem', fontSize: '0.9rem' }}>
+            Schütze deine API in weniger als 2 Minuten mit globalem Edge Rate Limiting.
+          </p>
+          <p style={{ color: 'rgba(52,211,153,0.85)', marginBottom: '1.5rem', fontSize: '0.88rem', fontWeight: 600, letterSpacing: '0.01em' }}>
+            ✔ Kein Setup &nbsp;✔ Keine Kreditkarte &nbsp;✔ &lt;10ms Latenz weltweit
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="/register" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 700, fontSize: '0.95rem', boxShadow: '0 8px 30px -8px rgba(59,130,246,0.4)' }}>
