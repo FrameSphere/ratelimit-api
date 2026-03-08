@@ -259,20 +259,17 @@ export function HomePage() {
               Kostenlos starten →
             </a>
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', marginBottom: '0.6rem' }}>Weitere Infos:</p>
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
-              <a href="/faq" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
-                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>FAQ ansehen</a>
-              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
-              <a href="/vergleich" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
-                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>Tool-Vergleich</a>
-              <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.85rem' }}>•</span>
-              <a href="/changelog" style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none' }}
-                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>Changelog</a>
-            </div>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="/faq" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+              FAQ ansehen
+            </a>
+            <a href="/vergleich" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+              Tool-Vergleich
+            </a>
+            <a href="/changelog" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 700, fontSize: '0.95rem', boxShadow: '0 8px 30px -8px rgba(59,130,246,0.4)' }}>
+              Changelog
+            </a>
+          </div>
           </div>
         </div>
 

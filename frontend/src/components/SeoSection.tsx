@@ -206,17 +206,6 @@ export function SeoSection() {
           <p style={{ color: 'rgba(52,211,153,0.85)', marginBottom: '1.5rem', fontSize: '0.88rem', fontWeight: 600, letterSpacing: '0.01em' }}>
             ✔ Kein Setup &nbsp;✔ Keine Kreditkarte &nbsp;✔ &lt;10ms Latenz weltweit
           </p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/register" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 700, fontSize: '0.95rem', boxShadow: '0 8px 30px -8px rgba(59,130,246,0.4)' }}>
-              Kostenlos starten →
-            </a>
-            <a href="/faq" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              FAQ ansehen
-            </a>
-            <a href="/vergleich" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              Tool-Vergleich
-            </a>
-          </div>
         </div>
 
       </div>
