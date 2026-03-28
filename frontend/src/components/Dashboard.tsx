@@ -70,6 +70,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
   });
   const [selectedApiKeyName, setSelectedApiKeyName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabId>('keys');
+  const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => { loadProfile(); }, []);
 
@@ -212,8 +213,13 @@ export function Dashboard({ onLogout }: DashboardProps) {
           </div>
         )}
 
-        {/* User */}
-        <div style={{ padding: '0.875rem 1.125rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+        {/* User – click to open profile */}
+        <button
+          onClick={() => setProfileOpen(true)}
+          style={{ padding: '0.875rem 1.125rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '0.625rem', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', transition: 'background .15s' }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}
+        >
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
             {initials}
           </div>
@@ -221,20 +227,10 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || '…'}</div>
             <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.28)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.email || ''}</div>
           </div>
-          <button
-            onClick={onLogout}
-            title="Abmelden"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, padding: '0.35rem', cursor: 'pointer', color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', transition: 'all .15s', flexShrink: 0 }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#f87171'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(248,113,113,0.25)'; (e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.07)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </button>
-        </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 5.46 5.46M4.93 19.07A10 10 0 0 0 18.54 18.54M15.5 2.1A10 10 0 0 0 2.1 15.5M8.5 21.9A10 10 0 0 0 21.9 8.5"/>
+          </svg>
+        </button>
       </aside>
 
       {/* ── Main ── */}
@@ -302,6 +298,16 @@ export function Dashboard({ onLogout }: DashboardProps) {
           )}
         </main>
       </div>
+
+      {/* ── Profile Modal ── */}
+      {profileOpen && (
+        <ProfileModal
+          user={user}
+          onClose={() => setProfileOpen(false)}
+          onLogout={onLogout}
+          onUserUpdate={(updated) => setUser(updated)}
+        />
+      )}
 
       <style>{`
         :root {
@@ -473,5 +479,309 @@ function NavItem({ icon, label, isActive, isDisabled, onClick }: {
       {label}
       {isDisabled && <span style={{ marginLeft: 'auto', fontSize: '0.65rem', opacity: 0.35 }}>🔒</span>}
     </button>
+  );
+}
+
+// ── Profile Modal ──────────────────────────────────────────────────────────
+function ProfileModal({ user, onClose, onLogout, onUserUpdate }: {
+  user: any;
+  onClose: () => void;
+  onLogout: () => void;
+  onUserUpdate: (u: any) => void;
+}) {
+  const [tab, setTab] = useState<'profile' | 'security' | 'danger'>('profile');
+  const [name, setName] = useState(user?.name || '');
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  const initials = user?.name
+    ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
+    : '?';
+
+  const memberSince = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })
+    : '—';
+
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+  const token = localStorage.getItem('token');
+
+  const saveName = async () => {
+    if (!name.trim() || name === user?.name) return;
+    setSaving(true); setSaveMsg(null);
+    try {
+      const res = await fetch(`${API_BASE}/auth/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      if (res.ok) {
+        const d = await res.json();
+        onUserUpdate({ ...user, name: name.trim(), ...d.user });
+        setSaveMsg({ ok: true, text: 'Name erfolgreich gespeichert.' });
+      } else {
+        setSaveMsg({ ok: false, text: 'Fehler beim Speichern.' });
+      }
+    } catch { setSaveMsg({ ok: false, text: 'Netzwerkfehler.' }); }
+    setSaving(false);
+  };
+
+  const changePassword = async () => {
+    if (!currentPw || !newPw || newPw !== confirmPw) {
+      setPwMsg({ ok: false, text: newPw !== confirmPw ? 'Passwörter stimmen nicht überein.' : 'Alle Felder ausfüllen.' });
+      return;
+    }
+    if (newPw.length < 8) { setPwMsg({ ok: false, text: 'Passwort muss mindestens 8 Zeichen haben.' }); return; }
+    setPwSaving(true); setPwMsg(null);
+    try {
+      const res = await fetch(`${API_BASE}/auth/password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword: currentPw, newPassword: newPw }),
+      });
+      if (res.ok) {
+        setPwMsg({ ok: true, text: 'Passwort erfolgreich geändert.' });
+        setCurrentPw(''); setNewPw(''); setConfirmPw('');
+      } else {
+        const d = await res.json();
+        setPwMsg({ ok: false, text: d.error || 'Fehler beim Ändern des Passworts.' });
+      }
+    } catch { setPwMsg({ ok: false, text: 'Netzwerkfehler.' }); }
+    setPwSaving(false);
+  };
+
+  const deleteAccount = async () => {
+    if (deleteConfirm !== 'LÖSCHEN') return;
+    setDeleting(true);
+    try {
+      await fetch(`${API_BASE}/auth/account`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      onLogout();
+    } catch { setDeleting(false); }
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', padding: '0.625rem 0.75rem',
+    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 8, color: 'white', fontSize: '0.875rem',
+    outline: 'none', transition: 'border-color .15s',
+    fontFamily: 'inherit',
+  };
+  const labelStyle: React.CSSProperties = {
+    display: 'block', fontSize: '0.72rem', fontWeight: 700,
+    color: 'rgba(255,255,255,0.35)', letterSpacing: '0.05em',
+    textTransform: 'uppercase', marginBottom: '0.4rem',
+  };
+
+  const tabs: { id: typeof tab; label: string }[] = [
+    { id: 'profile', label: 'Profil' },
+    { id: 'security', label: 'Sicherheit' },
+    { id: 'danger', label: 'Account' },
+  ];
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', animation: 'fadeIn .15s ease' }}
+      />
+      {/* Panel */}
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        zIndex: 101, width: 480, maxWidth: 'calc(100vw - 2rem)', maxHeight: 'calc(100vh - 4rem)',
+        background: '#0c1525', border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
+        animation: 'slideUp .2s cubic-bezier(0.16,1,0.3,1)',
+      }}>
+        {/* Modal header */}
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'white', margin: 0 }}>Konto-Einstellungen</h2>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 6, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '1rem', transition: 'all .15s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'white'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.4)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'; }}
+          >×</button>
+        </div>
+
+        {/* Avatar row */}
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+          <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', fontWeight: 700, color: 'white', flexShrink: 0 }}>
+            {initials}
+          </div>
+          <div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'white', marginBottom: 2 }}>{user?.name}</div>
+            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)' }}>{user?.email}</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)', marginTop: 3 }}>Mitglied seit {memberSince}</div>
+          </div>
+          <button
+            onClick={onLogout}
+            style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.4rem 0.875rem', borderRadius: 7, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, transition: 'all .15s', flexShrink: 0 }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.16)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(248,113,113,0.08)'; }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Abmelden
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              flex: 1, padding: '0.75rem', background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '0.82rem', fontWeight: tab === t.id ? 600 : 400,
+              color: tab === t.id ? '#60a5fa' : 'rgba(255,255,255,0.35)',
+              borderBottom: `2px solid ${tab === t.id ? '#3b82f6' : 'transparent'}`,
+              marginBottom: -1, transition: 'all .15s',
+            }}>{t.label}</button>
+          ))}
+        </div>
+
+        {/* Tab content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+
+          {/* PROFIL */}
+          {tab === 'profile' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={labelStyle}>Anzeigename</label>
+                <input
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  style={inputStyle}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(59,130,246,0.5)'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>E-Mail-Adresse</label>
+                <input value={user?.email || ''} disabled style={{ ...inputStyle, opacity: 0.4, cursor: 'not-allowed' }} />
+                <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)', marginTop: 4 }}>E-Mail kann über den Support geändert werden.</div>
+              </div>
+              <div>
+                <label style={labelStyle}>Account-ID</label>
+                <input value={`#${user?.id || '—'}`} disabled style={{ ...inputStyle, opacity: 0.4, cursor: 'not-allowed', fontFamily: 'monospace' }} />
+              </div>
+              {saveMsg && (
+                <div style={{ padding: '0.625rem 0.75rem', borderRadius: 7, background: saveMsg.ok ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${saveMsg.ok ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`, color: saveMsg.ok ? '#34d399' : '#f87171', fontSize: '0.82rem' }}>
+                  {saveMsg.text}
+                </div>
+              )}
+              <button
+                onClick={saveName}
+                disabled={saving || !name.trim() || name === user?.name}
+                style={{ padding: '0.6rem 1.25rem', borderRadius: 8, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: saving ? 'wait' : 'pointer', opacity: (!name.trim() || name === user?.name) ? 0.4 : 1, transition: 'opacity .15s', alignSelf: 'flex-start' }}
+              >
+                {saving ? 'Speichern…' : 'Änderungen speichern'}
+              </button>
+            </div>
+          )}
+
+          {/* SICHERHEIT */}
+          {tab === 'security' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ padding: '0.875rem', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 8, fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+                🔐 Passwort ändern – mindestens 8 Zeichen.
+              </div>
+              <div>
+                <label style={labelStyle}>Aktuelles Passwort</label>
+                <input type="password" value={currentPw} onChange={e => setCurrentPw(e.target.value)} style={inputStyle} placeholder="••••••••"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(59,130,246,0.5)'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'} />
+              </div>
+              <div>
+                <label style={labelStyle}>Neues Passwort</label>
+                <input type="password" value={newPw} onChange={e => setNewPw(e.target.value)} style={inputStyle} placeholder="••••••••"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(59,130,246,0.5)'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'} />
+              </div>
+              <div>
+                <label style={labelStyle}>Neues Passwort wiederholen</label>
+                <input type="password" value={confirmPw} onChange={e => setConfirmPw(e.target.value)} style={inputStyle} placeholder="••••••••"
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(59,130,246,0.5)'}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.1)'} />
+              </div>
+              {newPw && confirmPw && newPw !== confirmPw && (
+                <div style={{ fontSize: '0.75rem', color: '#f87171' }}>Passwörter stimmen nicht überein.</div>
+              )}
+              {pwMsg && (
+                <div style={{ padding: '0.625rem 0.75rem', borderRadius: 7, background: pwMsg.ok ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${pwMsg.ok ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`, color: pwMsg.ok ? '#34d399' : '#f87171', fontSize: '0.82rem' }}>
+                  {pwMsg.text}
+                </div>
+              )}
+              <button
+                onClick={changePassword}
+                disabled={pwSaving}
+                style={{ padding: '0.6rem 1.25rem', borderRadius: 8, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: pwSaving ? 'wait' : 'pointer', alignSelf: 'flex-start' }}
+              >
+                {pwSaving ? 'Ändern…' : 'Passwort ändern'}
+              </button>
+
+              {/* Login Methode */}
+              <div style={{ marginTop: '0.5rem', padding: '0.875rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8 }}>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>Aktive Sitzung</div>
+                <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)' }}>Du bist als <strong style={{ color: 'white' }}>{user?.email}</strong> angemeldet.</div>
+                <button onClick={onLogout} style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0.4rem 0.875rem', borderRadius: 7, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)', color: '#f87171', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  Abmelden
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* DANGER ZONE */}
+          {tab === 'danger' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ padding: '1rem', background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 10 }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f87171', marginBottom: '0.5rem' }}>⚠️ Account löschen</div>
+                <div style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.4)', lineHeight: 1.65, marginBottom: '1rem' }}>
+                  Dieser Vorgang ist <strong style={{ color: '#fbbf24' }}>unumkehrbar</strong>. Alle API Keys, Konfigurationen, Filter und Analytics werden dauerhaft gelöscht.
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, color: '#f87171' }}>Zur Bestätigung "LÖSCHEN" eingeben</label>
+                  <input
+                    value={deleteConfirm}
+                    onChange={e => setDeleteConfirm(e.target.value)}
+                    placeholder="LÖSCHEN"
+                    style={{ ...inputStyle, borderColor: deleteConfirm === 'LÖSCHEN' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)' }}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = 'rgba(239,68,68,0.5)'}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = deleteConfirm === 'LÖSCHEN' ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'}
+                  />
+                </div>
+                <button
+                  onClick={deleteAccount}
+                  disabled={deleteConfirm !== 'LÖSCHEN' || deleting}
+                  style={{ marginTop: '0.875rem', padding: '0.55rem 1.25rem', borderRadius: 8, background: deleteConfirm === 'LÖSCHEN' ? '#dc2626' : 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: deleteConfirm === 'LÖSCHEN' ? 'white' : '#f87171', fontWeight: 700, fontSize: '0.85rem', cursor: deleteConfirm === 'LÖSCHEN' && !deleting ? 'pointer' : 'not-allowed', transition: 'all .15s', opacity: deleteConfirm === 'LÖSCHEN' ? 1 : 0.5 }}
+                >
+                  {deleting ? 'Wird gelöscht…' : 'Account permanent löschen'}
+                </button>
+              </div>
+
+              <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }}>
+                <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: '0.4rem' }}>Support kontaktieren</div>
+                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)', lineHeight: 1.6, marginBottom: '0.75rem' }}>Probleme mit deinem Account? Wir helfen dir gerne weiter.</div>
+                <a href="mailto:support@ratelimit-api.com" style={{ fontSize: '0.8rem', color: '#60a5fa', textDecoration: 'none', fontWeight: 600 }}>support@ratelimit-api.com →</a>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translate(-50%,-48%); } to { opacity: 1; transform: translate(-50%,-50%); } }
+      `}</style>
+    </>
   );
 }

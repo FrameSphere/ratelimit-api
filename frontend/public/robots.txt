@@ -1,11 +1,19 @@
 User-agent: *
 Allow: /
 
-# Disallow authentication pages from indexing
-Disallow: /auth/
-Disallow: /login
-Disallow: /register
+# Öffentliche Seiten — crawler-freundlich
+Allow: /docs
+Allow: /faq
+Allow: /vergleich
+Allow: /changelog
+Allow: /blog/
+Allow: /register
+Allow: /impressum
+Allow: /datenschutz
+
+# Interne Seiten — kein Index gewünscht
 Disallow: /dashboard
+Disallow: /auth/
 
 # Sitemap
 Sitemap: https://ratelimit-api.pages.dev/sitemap.xml

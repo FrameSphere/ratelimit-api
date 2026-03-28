@@ -1,21 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ══ Hauptseiten ══ -->
   <url>
     <loc>https://ratelimit-api.pages.dev/</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2025-03-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
+
   <url>
-    <loc>https://ratelimit-api.pages.dev/login</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <loc>https://ratelimit-api.pages.dev/docs</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
   </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/faq</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/vergleich</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/changelog</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- ══ Auth-Seiten ══ -->
   <url>
     <loc>https://ratelimit-api.pages.dev/register</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2025-03-28</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.65</priority>
   </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/login</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.55</priority>
+  </url>
+
+  <!-- ══ Blog / Guides ══ -->
+  <url>
+    <loc>https://ratelimit-api.pages.dev/blog/cloudflare-rate-limiting</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/blog/rate-limiting-algorithms</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/blog/api-use-cases</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
+  <!-- ══ Rechtliches ══ -->
+  <url>
+    <loc>https://ratelimit-api.pages.dev/impressum</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://ratelimit-api.pages.dev/datenschutz</loc>
+    <lastmod>2025-03-28</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
 </urlset>

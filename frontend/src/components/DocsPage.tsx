@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // ── Types ────────────────────────────────────────────────────────
 type SectionId =
@@ -141,9 +141,46 @@ function ParamTable({ children }: { children: React.ReactNode }) {
 // ── Main component ───────────────────────────────────────────────
 export function DocsPage() {
   const [activeSection, setActiveSection] = useState<SectionId>('overview');
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  // Flag to suppress observer during programmatic scrolls
+  const scrollingRef = useRef(false);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // ── Scroll spy via IntersectionObserver ──
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (scrollingRef.current) return; // ignore while user clicked a nav item
+        // Find the topmost intersecting section
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          setActiveSection(visible[0].target.id as SectionId);
+        }
+      },
+      {
+        // Section triggers when its top enters the upper 30% of viewport
+        rootMargin: '-10% 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    const sectionIds = NAV.map(n => n.id);
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observerRef.current!.observe(el);
+    });
+
+    return () => observerRef.current?.disconnect();
+  }, []);
 
   const scrollTo = (id: SectionId) => {
     setActiveSection(id);
+    // Suppress the observer briefly so it doesn't fight the programmatic scroll
+    scrollingRef.current = true;
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => { scrollingRef.current = false; }, 800);
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
