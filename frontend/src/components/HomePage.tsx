@@ -68,6 +68,12 @@ export function HomePage() {
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
               Features
             </a>
+            <a href="/docs" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
+               onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Docs
+            </a>
             <a href="/changelog" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
@@ -260,8 +266,11 @@ export function HomePage() {
             </a>
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', marginBottom: '0.6rem' }}>Weitere Infos:</p>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="/docs" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+              Dokumentation
+            </a>
             <a href="/faq" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              FAQ ansehen
+              FAQ
             </a>
             <a href="/vergleich" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
               Tool-Vergleich
@@ -277,7 +286,7 @@ export function HomePage() {
         <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.5rem 2rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
             <div style={{ display: 'flex', gap: '1.75rem', justifyContent: 'center', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-              {[['Anmelden','/login'],['Registrieren','/register'],['Dashboard','/dashboard'],['Changelog','/changelog'],['Impressum','/impressum'],['Datenschutz','/datenschutz']].map(([label,href]) => (
+              {[['Anmelden','/login'],['Registrieren','/register'],['Dashboard','/dashboard'],['Docs','/docs'],['Changelog','/changelog'],['Impressum','/impressum'],['Datenschutz','/datenschutz']].map(([label,href]) => (
                 <a key={href} href={href} style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}
                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>

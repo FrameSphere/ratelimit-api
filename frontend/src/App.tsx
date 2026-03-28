@@ -8,6 +8,7 @@ import { HomePage } from './components/HomePage';
 import { ChangelogPage } from './components/ChangelogPage';
 import { FaqPage } from './components/FaqPage';
 import { VergleichPage } from './components/VergleichPage';
+import { DocsPage } from './components/DocsPage';
 import { CloudflareGuide } from './components/blog/CloudflareGuide';
 import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
@@ -52,6 +53,7 @@ export default function App() {
         <Route path="/changelog" element={<ChangelogPage />} />
         <Route path="/faq"       element={<FaqPage />} />
         <Route path="/vergleich" element={<VergleichPage />} />
+        <Route path="/docs" element={<DocsPage />} />
         <Route path="/blog/cloudflare-rate-limiting"  element={<CloudflareGuide />} />
         <Route path="/blog/rate-limiting-algorithms"  element={<AlgorithmsGuide />} />
         <Route path="/blog/api-use-cases"             element={<UseCasesGuide />} />
