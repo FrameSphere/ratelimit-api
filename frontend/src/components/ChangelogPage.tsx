@@ -292,7 +292,15 @@ export function ChangelogPage() {
             <a key={h} href={h} style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{l}</a>
           ))}
         </div>
-        © 2026 RateLimit API
+        © 2026 RateLimit API · powered by{' '}
+        <a
+          href="https://frame-sphere.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+        >FrameSphere</a>
       </footer>
 
       <style>{`

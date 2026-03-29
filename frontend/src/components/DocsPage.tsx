@@ -781,7 +781,17 @@ curl -X POST ${BASE_URL}/check \\
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}>{l}</a>
           ))}
         </div>
-        <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.15)' }}>© 2026 RateLimit API</div>
+        <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.15)' }}>
+          © 2026 RateLimit API · powered by{' '}
+          <a
+            href="https://frame-sphere.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'rgba(255,255,255,0.15)', textDecoration: 'none' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.15)')}
+          >FrameSphere</a>
+        </div>
       </footer>
 
       <style>{`

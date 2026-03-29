@@ -19,7 +19,17 @@ export function SiteFooter() {
           ))}
         </div>
         <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.2)' }}>
-          © 2026 RateLimit API · API Rate Limiting Service auf Cloudflare Workers
+          © 2026 RateLimit API · API Rate Limiting Service auf Cloudflare Workers · powered by{' '}
+          <a
+            href="https://frame-sphere.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'rgba(255,255,255,0.2)', textDecoration: 'none' }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
+          >
+            FrameSphere
+          </a>
         </div>
       </div>
     </footer>

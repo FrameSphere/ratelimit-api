@@ -294,7 +294,17 @@ export function HomePage() {
                 </a>
               ))}
             </div>
-            <div>© 2026 RateLimit API</div>
+            <div>
+              © 2026 RateLimit API · powered by{' '}
+              <a
+                href="https://frame-sphere.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'inherit', textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >FrameSphere</a>
+            </div>
           </div>
         </footer>
       </div>
