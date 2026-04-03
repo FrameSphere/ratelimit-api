@@ -14,7 +14,6 @@ JWT_SECRET = "your-secret-key-change-this"
 # WebControl HQ – Error-Reporting
 HQ_API_URL = "https://webcontrol-hq-api.karol-paschek.workers.dev"
 HQ_SITE_ID = "ratelimit"
-# HQ_AUTH_TOKEN wird als Secret gesetzt: npx wrangler secret put HQ_AUTH_TOKEN
 
 # OAuth Configuration
 OAUTH_REDIRECT_URI = "https://ratelimit-api.pages.dev/auth/callback"
@@ -27,9 +26,18 @@ GOOGLE_CLIENT_SECRET = "your-google-client-secret"
 GITHUB_CLIENT_ID = "Ov23lijYavVjCd1hfkLS"
 GITHUB_CLIENT_SECRET = "d73e4aa59561f87d7e793b39087da7aa2ff7db43"
 
-# FrameSphere OAuth (Custom Provider)
+# FrameSphere OAuth
 FRAMESPHERE_CLIENT_ID = "your-framesphere-client-id"
 FRAMESPHERE_CLIENT_SECRET = "your-framesphere-client-secret"
 FRAMESPHERE_AUTH_URL = "https://auth.framesphere.com/oauth/authorize"
 FRAMESPHERE_TOKEN_URL = "https://auth.framesphere.com/oauth/token"
 FRAMESPHERE_USERINFO_URL = "https://auth.framesphere.com/oauth/userinfo"
+
+# ─── Stripe ───────────────────────────────────────────────────────────────────
+# Stripe Public Price ID for Pro plan (safe to commit)
+STRIPE_PRO_PRICE_ID = "price_1TICQsEC9c8leIGWPp89vZi6"
+
+# Stripe secrets – set via wrangler secrets (DO NOT commit real values):
+#   npx wrangler secret put STRIPE_SECRET_KEY
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET
+#   npx wrangler secret put HQ_AUTH_TOKEN

@@ -1,10 +1,10 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8787';
 
-// Type Definitions
 export interface User {
   id: number;
   email: string;
   name: string;
+  plan?: string;
 }
 
 export interface ApiKey {
@@ -77,33 +77,17 @@ class ApiClient {
     localStorage.removeItem('token');
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    if (this.token) {
-      (headers as any)['Authorization'] = `Bearer ${this.token}`;
-    }
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (this.token) (headers as any)['Authorization'] = `Bearer ${this.token}`;
 
     try {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         ...options,
-        headers: {
-          ...headers,
-          ...(options.headers || {}),
-        },
+        headers: { ...headers, ...(options.headers || {}) },
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        return { error: data.error || 'Request failed' };
-      }
-
+      if (!response.ok) return { error: data.error || 'Request failed' };
       return { data };
     } catch (error) {
       console.error('API request error:', error);
@@ -111,103 +95,111 @@ class ApiClient {
     }
   }
 
-  // Auth
-  async register(email: string, password: string, name: string): Promise<ApiResponse<{ token: string; user: User }>> {
-    return this.request('/auth/register', {
+  // ── Auth ──────────────────────────────────────────────────────────────────
+
+  async register(email: string, password: string, name: string) {
+    return this.request<{ token: string; user: User }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, name }),
     });
   }
 
-  async login(email: string, password: string): Promise<ApiResponse<{ token: string; user: User }>> {
-    return this.request('/auth/login', {
+  async login(email: string, password: string) {
+    return this.request<{ token: string; user: User }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
   }
 
-  async getProfile(): Promise<ApiResponse<{ user: User }>> {
-    return this.request('/auth/profile');
+  async getProfile() {
+    return this.request<{ user: User }>('/auth/profile');
   }
 
-  // API Keys
-  async createApiKey(keyName: string): Promise<ApiResponse<{ apiKey: ApiKey }>> {
-    return this.request('/api/keys', {
+  // ── API Keys ──────────────────────────────────────────────────────────────
+
+  async createApiKey(keyName: string) {
+    return this.request<{ apiKey: ApiKey }>('/api/keys', {
       method: 'POST',
       body: JSON.stringify({ keyName }),
     });
   }
 
-  async getApiKeys(): Promise<ApiResponse<{ apiKeys: ApiKey[] }>> {
-    return this.request('/api/keys');
+  async getApiKeys() {
+    return this.request<{ apiKeys: ApiKey[] }>('/api/keys');
   }
 
-  async deleteApiKey(id: number): Promise<ApiResponse<{ message: string }>> {
-    return this.request(`/api/keys/${id}`, {
-      method: 'DELETE',
-    });
+  async deleteApiKey(id: number) {
+    return this.request<{ message: string }>(`/api/keys/${id}`, { method: 'DELETE' });
   }
 
-  // Configs
-  async createConfig(
-    apiKeyId: number, 
-    name: string, 
-    maxRequests: number, 
-    windowSeconds: number
-  ): Promise<ApiResponse<{ config: RateLimitConfig }>> {
-    return this.request('/api/configs', {
+  // ── Configs ───────────────────────────────────────────────────────────────
+
+  async createConfig(apiKeyId: number, name: string, maxRequests: number, windowSeconds: number) {
+    return this.request<{ config: RateLimitConfig }>('/api/configs', {
       method: 'POST',
       body: JSON.stringify({ apiKeyId, name, maxRequests, windowSeconds }),
     });
   }
 
-  async getConfigs(apiKeyId: number): Promise<ApiResponse<{ configs: RateLimitConfig[] }>> {
-    return this.request(`/api/configs/${apiKeyId}`);
+  async getConfigs(apiKeyId: number) {
+    return this.request<{ configs: RateLimitConfig[] }>(`/api/configs/${apiKeyId}`);
   }
 
-  async updateConfig(id: number, data: Partial<RateLimitConfig>): Promise<ApiResponse<{ config: RateLimitConfig }>> {
-    return this.request(`/api/configs/${id}`, {
+  async updateConfig(id: number, data: Partial<RateLimitConfig>) {
+    return this.request<{ config: RateLimitConfig }>(`/api/configs/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
   }
 
-  async deleteConfig(id: number): Promise<ApiResponse<{ message: string }>> {
-    return this.request(`/api/configs/${id}`, {
-      method: 'DELETE',
-    });
+  async deleteConfig(id: number) {
+    return this.request<{ message: string }>(`/api/configs/${id}`, { method: 'DELETE' });
   }
 
-  // Filters
-  async createFilter(
-    configId: number, 
-    ruleType: string, 
-    ruleValue: string, 
-    action: string
-  ): Promise<ApiResponse<{ filter: FilterRule }>> {
-    return this.request('/api/filters', {
+  // ── Filters ───────────────────────────────────────────────────────────────
+
+  async createFilter(configId: number, ruleType: string, ruleValue: string, action: string) {
+    return this.request<{ filter: FilterRule }>('/api/filters', {
       method: 'POST',
       body: JSON.stringify({ configId, ruleType, ruleValue, action }),
     });
   }
 
-  async getFilters(configId: number): Promise<ApiResponse<{ filters: FilterRule[] }>> {
-    return this.request(`/api/filters/${configId}`);
+  async getFilters(configId: number) {
+    return this.request<{ filters: FilterRule[] }>(`/api/filters/${configId}`);
   }
 
-  async deleteFilter(id: number): Promise<ApiResponse<{ message: string }>> {
-    return this.request(`/api/filters/${id}`, {
-      method: 'DELETE',
+  async deleteFilter(id: number) {
+    return this.request<{ message: string }>(`/api/filters/${id}`, { method: 'DELETE' });
+  }
+
+  // ── Analytics ─────────────────────────────────────────────────────────────
+
+  async getAnalytics(apiKeyId: number, range: string = '24h') {
+    return this.request<AnalyticsData>(`/api/analytics/${apiKeyId}?range=${range}`);
+  }
+
+  async getRecentLogs(apiKeyId: number, limit: number = 50) {
+    return this.request<{ logs: RequestLog[] }>(`/api/logs/${apiKeyId}?limit=${limit}`);
+  }
+
+  // ── Stripe ────────────────────────────────────────────────────────────────
+
+  async createCheckoutSession(successUrl?: string, cancelUrl?: string) {
+    return this.request<{ url: string; sessionId: string }>('/api/stripe/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ successUrl, cancelUrl }),
     });
   }
 
-  // Analytics
-  async getAnalytics(apiKeyId: number, range: string = '24h'): Promise<ApiResponse<AnalyticsData>> {
-    return this.request(`/api/analytics/${apiKeyId}?range=${range}`);
+  async createPortalSession() {
+    return this.request<{ url: string }>('/api/stripe/portal', { method: 'POST', body: '{}' });
   }
 
-  async getRecentLogs(apiKeyId: number, limit: number = 50): Promise<ApiResponse<{ logs: RequestLog[] }>> {
-    return this.request(`/api/logs/${apiKeyId}?limit=${limit}`);
+  async getSubscriptionStatus() {
+    return this.request<{ plan: string; customerId: string | null; subscriptionId: string | null }>(
+      '/api/stripe/status'
+    );
   }
 }
 

@@ -9,6 +9,8 @@ import { ChangelogPage } from './components/ChangelogPage';
 import { FaqPage } from './components/FaqPage';
 import { VergleichPage } from './components/VergleichPage';
 import { DocsPage } from './components/DocsPage';
+import { PricingPage } from './components/PricingPage';
+import { PaymentSuccess } from './components/PaymentSuccess';
 import { CloudflareGuide } from './components/blog/CloudflareGuide';
 import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
@@ -39,7 +41,14 @@ export default function App() {
   const handleLogout = () => { api.clearToken(); setIsAuthenticated(false); };
 
   if (loading) {
-    return <div className="loading" style={{ minHeight: '100vh' }}>Lädt…</div>;
+    return (
+      <div style={{
+        minHeight: '100vh', background: '#0f172a',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.9rem' }}>Lädt…</div>
+      </div>
+    );
   }
 
   return (
@@ -49,14 +58,20 @@ export default function App() {
         <Route path="/auth/callback" element={<OAuthCallback />} />
 
         {/* Public */}
-        <Route path="/"          element={<HomePage />} />
-        <Route path="/changelog" element={<ChangelogPage />} />
-        <Route path="/faq"       element={<FaqPage />} />
-        <Route path="/vergleich" element={<VergleichPage />} />
-        <Route path="/docs" element={<DocsPage />} />
-        <Route path="/blog/cloudflare-rate-limiting"  element={<CloudflareGuide />} />
-        <Route path="/blog/rate-limiting-algorithms"  element={<AlgorithmsGuide />} />
-        <Route path="/blog/api-use-cases"             element={<UseCasesGuide />} />
+        <Route path="/"              element={<HomePage />} />
+        <Route path="/pricing"       element={<PricingPage />} />
+        <Route path="/changelog"     element={<ChangelogPage />} />
+        <Route path="/faq"           element={<FaqPage />} />
+        <Route path="/vergleich"     element={<VergleichPage />} />
+        <Route path="/docs"          element={<DocsPage />} />
+
+        {/* Stripe success page – accessible when logged in or logged out */}
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+
+        {/* Blog */}
+        <Route path="/blog/cloudflare-rate-limiting" element={<CloudflareGuide />} />
+        <Route path="/blog/rate-limiting-algorithms" element={<AlgorithmsGuide />} />
+        <Route path="/blog/api-use-cases"            element={<UseCasesGuide />} />
 
         <Route path="/login" element={
           isAuthenticated

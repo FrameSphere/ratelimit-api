@@ -1,54 +1,41 @@
 import { Hono } from 'hono';
 import { corsMiddleware } from './middleware/cors';
 import { authMiddleware } from './middleware/auth';
-import { reportErrorToHQ, notifyHQ } from './hq-reporter';
+import { reportErrorToHQ } from './hq-reporter';
 
-// Auth handlers
-import { register, login, getProfile } from './auth/handlers';
+import { register, login, getProfile, updateProfile, changePassword, deleteAccount } from './auth/handlers';
 import {
-  googleOAuthInit,
-  googleOAuthCallback,
-  githubOAuthInit,
-  githubOAuthCallback,
-  framesphereOAuthInit,
-  framesphereOAuthCallback
+  googleOAuthInit, googleOAuthCallback,
+  githubOAuthInit, githubOAuthCallback,
+  framesphereOAuthInit, framesphereOAuthCallback
 } from './auth/oauth';
 
-// Rate limit handlers
 import { createApiKey, getApiKeys, deleteApiKey } from './ratelimit/api-keys';
 import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimit/configs';
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit } from './ratelimit/checker';
-
-// Analytics handlers
 import { getAnalytics, getRecentLogs } from './analytics/handlers';
+import {
+  createCheckoutSession,
+  createPortalSession,
+  handleStripeWebhook,
+  getSubscriptionStatus,
+} from './stripe/handlers';
 
 const app = new Hono();
 
-// Apply CORS middleware
 app.use('/*', corsMiddleware);
 
-// Health check
-app.get('/', (c) => {
-  return c.json({
-    message: 'Rate Limit API is running',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/auth/*',
-      apiKeys: '/api/keys/*',
-      configs: '/api/configs/*',
-      filters: '/api/filters/*',
-      check: '/check',
-      analytics: '/api/analytics/*'
-    }
-  });
-});
+app.get('/', (c) => c.json({
+  message: 'Rate Limit API is running',
+  version: '2.0.0',
+  plans: ['free', 'pro'],
+}));
 
-// ===== Public Routes =====
+// ── Public routes ──────────────────────────────────────────────────────────
 app.post('/auth/register', register);
 app.post('/auth/login', login);
 
-// OAuth Routes
 app.get('/auth/oauth/google', googleOAuthInit);
 app.get('/auth/oauth/google/callback', googleOAuthCallback);
 app.get('/auth/oauth/github', githubOAuthInit);
@@ -56,16 +43,23 @@ app.get('/auth/oauth/github/callback', githubOAuthCallback);
 app.get('/auth/oauth/framesphere', framesphereOAuthInit);
 app.get('/auth/oauth/framesphere/callback', framesphereOAuthCallback);
 
-// Rate limit check endpoint (public, uses API key)
 app.get('/check', checkRateLimit);
 app.post('/check', checkRateLimit);
 
-// ===== Protected Routes =====
+// Stripe webhook — raw body required, BEFORE auth middleware
+app.post('/stripe/webhook', handleStripeWebhook);
+
+// ── Protected routes ───────────────────────────────────────────────────────
 app.use('/api/*', authMiddleware);
 app.use('/auth/profile', authMiddleware);
+app.use('/auth/password', authMiddleware);
+app.use('/auth/account', authMiddleware);
 
-// Auth
+// Profile
 app.get('/auth/profile', getProfile);
+app.put('/auth/profile', updateProfile);
+app.put('/auth/password', changePassword);
+app.delete('/auth/account', deleteAccount);
 
 // API Keys
 app.post('/api/keys', createApiKey);
@@ -87,15 +81,19 @@ app.delete('/api/filters/:id', deleteFilter);
 app.get('/api/analytics/:apiKeyId', getAnalytics);
 app.get('/api/logs/:apiKeyId', getRecentLogs);
 
+// Stripe
+app.post('/api/stripe/checkout', createCheckoutSession);
+app.post('/api/stripe/portal', createPortalSession);
+app.get('/api/stripe/status', getSubscriptionStatus);
+
 export default {
   async fetch(request: Request, env: any, ctx: ExecutionContext): Promise<Response> {
     try {
       return await app.fetch(request, env, ctx);
     } catch (err: any) {
-      // Report unhandled exceptions to WebControl HQ
       reportErrorToHQ(env, 'UnhandledError', err?.message || String(err), {
         stack: err?.stack,
-        path:  new URL(request.url).pathname,
+        path: new URL(request.url).pathname,
       });
       return new Response(JSON.stringify({ error: 'Internal server error' }), {
         status: 500,

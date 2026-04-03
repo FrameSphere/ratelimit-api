@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getLatestChangelog } from '../lib/hq';
 import { SeoSection } from './SeoSection';
+import { PLANS, formatRequests } from '../lib/plans';
 
 const TYPE_ICON:  Record<string, string> = { feature:'✨', fix:'🐛', improvement:'⚡', security:'🔒', breaking:'💥' };
 const TYPE_COLOR: Record<string, string> = {
@@ -34,10 +35,14 @@ export function HomePage() {
     e.preventDefault();
     document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
   };
+  const handlePricingClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: '#0f172a' }}>
-      {/* Animated Background Gradients – isolated so they never affect scroll */}
+      {/* Animated Background Gradients */}
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '-50%', left: '-10%', width: '60%', height: '60%', background: 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)', filter: 'blur(60px)', animation: 'float 20s ease-in-out infinite' }} />
         <div style={{ position: 'absolute', bottom: '-30%', right: '-10%', width: '50%', height: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)', filter: 'blur(60px)', animation: 'float 15s ease-in-out infinite reverse' }} />
@@ -63,11 +68,17 @@ export function HomePage() {
 
           {/* Nav links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <a href="#features" onClick={handleFeaturesClick} style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', transition: 'color .15s', cursor: 'pointer' }}
-               onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
-              Features
-            </a>
+            {[
+              { label: 'Features', href: '#features', onClick: handleFeaturesClick },
+              { label: 'Preise', href: '#pricing', onClick: handlePricingClick },
+            ].map(({ label, href, onClick }) => (
+              <a key={label} href={href} onClick={onClick}
+                style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', transition: 'color .15s', cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
+                {label}
+              </a>
+            ))}
             <a href="/docs" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
@@ -77,7 +88,7 @@ export function HomePage() {
             <a href="/changelog" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
               Changelog
               {releaseLoaded && latestRelease && (
                 <span style={{ fontSize: '10px', background: 'rgba(96,165,250,0.2)', color: '#60a5fa', padding: '1px 6px', borderRadius: 4, fontWeight: 700, fontFamily: 'monospace' }}>
@@ -104,7 +115,6 @@ export function HomePage() {
         {/* ── Hero ── */}
         <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '5rem 2rem 4rem', textAlign: 'center' }}>
 
-          {/* Latest release badge — links to changelog */}
           {releaseLoaded && latestRelease && (
             <a href="/changelog" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: '1.75rem',
               background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)',
@@ -144,8 +154,8 @@ export function HomePage() {
             <a href="/register" style={{ fontSize: '1.05rem', padding: '0.9rem 2.25rem', textDecoration: 'none', borderRadius: 10, fontWeight: 700, background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', boxShadow: '0 10px 40px -10px rgba(59,130,246,0.5)' }}>
               Jetzt kostenlos starten →
             </a>
-            <a href="#features" onClick={handleFeaturesClick} style={{ fontSize: '1.05rem', padding: '0.9rem 2.25rem', textDecoration: 'none', borderRadius: 10, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>
-              Mehr erfahren
+            <a href="#pricing" onClick={handlePricingClick} style={{ fontSize: '1.05rem', padding: '0.9rem 2.25rem', textDecoration: 'none', borderRadius: 10, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>
+              Preise ansehen
             </a>
           </div>
 
@@ -167,53 +177,31 @@ export function HomePage() {
               <div style={{
                 background: `linear-gradient(135deg, ${TYPE_BG[latestRelease.type] || 'rgba(59,130,246,0.06)'} 0%, rgba(15,23,42,0.4) 100%)`,
                 border: `1px solid ${TYPE_COLOR[latestRelease.type] || '#60a5fa'}30`,
-                borderRadius: 16,
-                padding: '1.5rem 2rem',
+                borderRadius: 16, padding: '1.5rem 2rem',
                 display: 'flex', alignItems: 'flex-start', gap: '1.25rem',
                 transition: 'border-color .2s, transform .15s',
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = (TYPE_COLOR[latestRelease.type] || '#60a5fa') + '60'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = (TYPE_COLOR[latestRelease.type] || '#60a5fa') + '30'; (e.currentTarget as HTMLElement).style.transform = 'none'; }}>
-
-                {/* Icon */}
-                <div style={{
-                  width: 52, height: 52, flexShrink: 0, borderRadius: 12,
-                  background: TYPE_BG[latestRelease.type] || 'rgba(59,130,246,0.12)',
-                  border: `1px solid ${TYPE_COLOR[latestRelease.type] || '#60a5fa'}30`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 24,
-                }}>
+                <div style={{ width: 52, height: 52, flexShrink: 0, borderRadius: 12, background: TYPE_BG[latestRelease.type] || 'rgba(59,130,246,0.12)', border: `1px solid ${TYPE_COLOR[latestRelease.type] || '#60a5fa'}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>
                   {TYPE_ICON[latestRelease.type] || '📋'}
                 </div>
-
-                {/* Content */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                      Neueste Version
-                    </span>
-                    <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.88rem', color: TYPE_COLOR[latestRelease.type] || '#60a5fa', background: `${TYPE_BG[latestRelease.type]}`, padding: '2px 9px', borderRadius: 5 }}>
-                      {latestRelease.version}
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
-                      {fmtDate(latestRelease.created_at)}
-                    </span>
+                    <span style={{ fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Neueste Version</span>
+                    <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.88rem', color: TYPE_COLOR[latestRelease.type] || '#60a5fa', background: `${TYPE_BG[latestRelease.type]}`, padding: '2px 9px', borderRadius: 5 }}>{latestRelease.version}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>{fmtDate(latestRelease.created_at)}</span>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'white', marginBottom: latestRelease.description ? 6 : 0 }}>
-                    {latestRelease.title}
-                  </div>
+                  <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'white', marginBottom: latestRelease.description ? 6 : 0 }}>{latestRelease.title}</div>
                   {latestRelease.description && (
                     <div style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.55 }}>
                       {latestRelease.description.slice(0, 160)}{latestRelease.description.length > 160 ? '…' : ''}
                     </div>
                   )}
                 </div>
-
-                {/* Arrow */}
                 <div style={{ alignSelf: 'center', fontSize: '1.25rem', color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>→</div>
               </div>
             </a>
-
             <div style={{ textAlign: 'center', marginTop: '1rem' }}>
               <a href="/changelog" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', textDecoration: 'none' }}
                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
@@ -255,7 +243,51 @@ export function HomePage() {
           </div>
         </div>
 
-        {/* ── SEO Content Section ── */}
+        {/* ── Pricing Section ── */}
+        <div id="pricing" style={{ maxWidth: '1200px', margin: '0 auto 8rem', padding: '0 2rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <h2 style={{ fontSize: '2.25rem', fontWeight: '700', color: 'white', marginBottom: '0.75rem' }}>
+              Einfache, faire Preise
+            </h2>
+            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '540px', margin: '0 auto' }}>
+              Starte kostenlos. Upgrade wenn du mehr brauchst. Kein Lock-in.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+            {/* Free */}
+            <HomePricingCard
+              planId="free"
+              highlight={false}
+              ctaLabel={isLoggedIn ? 'Dashboard öffnen' : 'Kostenlos starten'}
+              ctaHref={isLoggedIn ? '/dashboard' : '/register'}
+            />
+            {/* Pro */}
+            <HomePricingCard
+              planId="pro"
+              highlight={true}
+              ctaLabel="Jetzt upgraden – €4,99/Mo"
+              ctaHref="/pricing"
+            />
+            {/* Enterprise */}
+            <HomePricingCard
+              planId="enterprise"
+              highlight={false}
+              ctaLabel="Kontakt aufnehmen →"
+              ctaHref="mailto:enterprise@ratelimit-api.com?subject=Enterprise%20Plan%20Anfrage"
+            />
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '1.75rem' }}>
+            <a href="/pricing" style={{ color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '0.88rem' }}
+               onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
+               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}>
+              Vollständige Preisübersicht ansehen →
+            </a>
+          </div>
+        </div>
+
+        {/* ── SEO Content ── */}
         <SeoSection />
 
         {/* ── CTA ── */}
@@ -265,20 +297,13 @@ export function HomePage() {
               Kostenlos starten →
             </a>
             <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)', marginBottom: '0.6rem' }}>Weitere Infos:</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/docs" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              Dokumentation
-            </a>
-            <a href="/faq" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              FAQ
-            </a>
-            <a href="/vergleich" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-              Tool-Vergleich
-            </a>
-            <a href="/changelog" style={{ background: 'linear-gradient(135deg,#3b82f6,#8b5cf6)', color: 'white', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 700, fontSize: '0.95rem', boxShadow: '0 8px 30px -8px rgba(59,130,246,0.4)' }}>
-              Changelog
-            </a>
-          </div>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              {[['Dokumentation','/docs'],['FAQ','/faq'],['Preise','/pricing'],['Changelog','/changelog']].map(([label,href]) => (
+                <a key={href} href={href} style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '0.75rem 2rem', borderRadius: 9, fontWeight: 600, fontSize: '0.95rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {label}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -286,7 +311,7 @@ export function HomePage() {
         <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2.5rem 2rem', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>
           <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
             <div style={{ display: 'flex', gap: '1.75rem', justifyContent: 'center', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-              {[['Anmelden','/login'],['Registrieren','/register'],['Dashboard','/dashboard'],['Docs','/docs'],['Changelog','/changelog'],['Impressum','/impressum'],['Datenschutz','/datenschutz']].map(([label,href]) => (
+              {[['Anmelden','/login'],['Registrieren','/register'],['Dashboard','/dashboard'],['Preise','/pricing'],['Docs','/docs'],['Changelog','/changelog'],['Impressum','/impressum'],['Datenschutz','/datenschutz']].map(([label,href]) => (
                 <a key={href} href={href} style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}
                    onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}>
@@ -296,14 +321,7 @@ export function HomePage() {
             </div>
             <div>
               © 2026 RateLimit API · powered by{' '}
-              <a
-                href="https://frame-sphere.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'inherit', textDecoration: 'none' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-              >FrameSphere</a>
+              <a href="https://frame-sphere.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>FrameSphere</a>
             </div>
           </div>
         </footer>
@@ -316,6 +334,114 @@ export function HomePage() {
           66% { transform: translate(-20px,20px) scale(0.9); }
         }
       `}</style>
+    </div>
+  );
+}
+
+// ── Compact pricing card for HomePage ──────────────────────────────────────────
+
+function HomePricingCard({ planId, highlight, ctaLabel, ctaHref }: {
+  planId: 'free' | 'pro' | 'enterprise';
+  highlight: boolean;
+  ctaLabel: string;
+  ctaHref: string;
+}) {
+  const plan = PLANS[planId];
+  const isExternal = ctaHref.startsWith('mailto:');
+
+  const topFeatures = plan.features.filter(f => f.included).slice(0, 4);
+
+  return (
+    <div style={{
+      background: highlight
+        ? 'linear-gradient(135deg, rgba(109,40,217,0.15), rgba(139,92,246,0.08))'
+        : 'rgba(14,22,36,0.85)',
+      border: highlight ? '2px solid rgba(139,92,246,0.45)' : '1px solid rgba(255,255,255,0.07)',
+      borderRadius: 18, padding: '1.75rem',
+      position: 'relative',
+      boxShadow: highlight ? '0 20px 60px -20px rgba(139,92,246,0.3)' : 'none',
+    }}>
+      {plan.badge && (
+        <div style={{
+          position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
+          background: plan.gradient, color: 'white',
+          padding: '2px 14px', borderRadius: 20, fontSize: '0.75rem', fontWeight: 700,
+          whiteSpace: 'nowrap',
+        }}>
+          ⭐ {plan.badge}
+        </div>
+      )}
+
+      <div style={{ marginBottom: '1rem' }}>
+        <div style={{ fontSize: '1rem', fontWeight: 700, color: 'white' }}>{plan.name}</div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem', marginTop: '0.5rem' }}>
+          <span style={{ fontSize: '2rem', fontWeight: 800, color: 'white', letterSpacing: '-0.04em' }}>
+            {plan.priceLabel}
+          </span>
+          {plan.price !== null && plan.price > 0 && (
+            <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)' }}>/Mo</span>
+          )}
+        </div>
+        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.28)', marginTop: 2 }}>{plan.billingNote}</div>
+      </div>
+
+      {/* Key numbers */}
+      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 7, padding: '0.4rem 0.6rem', flex: 1, minWidth: 80 }}>
+          <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', fontWeight: 700 }}>Keys</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: highlight ? '#c4b5fd' : 'white' }}>
+            {plan.limits.apiKeys === null ? '∞' : plan.limits.apiKeys}
+          </div>
+        </div>
+        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 7, padding: '0.4rem 0.6rem', flex: 1, minWidth: 80 }}>
+          <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', fontWeight: 700 }}>Requests</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: highlight ? '#c4b5fd' : 'white' }}>
+            {formatRequests(plan.limits.requestsPerMonth)}
+          </div>
+        </div>
+        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 7, padding: '0.4rem 0.6rem', flex: 1, minWidth: 80 }}>
+          <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', fontWeight: 700 }}>Analytics</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: highlight ? '#c4b5fd' : 'white' }}>
+            {plan.limits.analyticsHistory}
+          </div>
+        </div>
+      </div>
+
+      {/* Top features */}
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+        {topFeatures.map(f => (
+          <li key={f.label} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={highlight ? '#a78bfa' : '#4ade80'} strokeWidth="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span style={{ color: 'rgba(255,255,255,0.65)' }}>{f.label}</span>
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href={ctaHref}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener noreferrer' : undefined}
+        style={{
+          display: 'block', width: '100%', textAlign: 'center',
+          padding: '0.7rem', borderRadius: 9, fontSize: '0.9rem', fontWeight: 700,
+          textDecoration: 'none',
+          background: highlight
+            ? 'linear-gradient(135deg,#7c3aed,#8b5cf6)'
+            : planId === 'enterprise'
+              ? 'linear-gradient(135deg,#b45309,#f59e0b)'
+              : 'rgba(255,255,255,0.06)',
+          color: highlight || planId === 'enterprise' ? 'white' : 'rgba(255,255,255,0.7)',
+          border: highlight || planId === 'enterprise' ? 'none' : '1px solid rgba(255,255,255,0.1)',
+          boxShadow: highlight ? '0 6px 24px -6px rgba(139,92,246,0.55)' : 'none',
+          transition: 'transform 0.15s, opacity 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = 'none'}
+      >
+        {ctaLabel}
+      </a>
     </div>
   );
 }
