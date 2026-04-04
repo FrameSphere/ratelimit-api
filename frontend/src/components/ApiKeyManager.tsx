@@ -31,10 +31,11 @@ export function ApiKeyManager({ onSelectApiKey, selectedApiKeyId }: ApiKeyManage
       // Load mini-stats for each key
       data.apiKeys.forEach(async (k: any) => {
         const { data: aData } = await api.getAnalytics(k.id, '24h');
-        if (aData?.summary) {
+        const summary = (aData as any)?.summary;
+        if (summary) {
           setStats(prev => ({
             ...prev,
-            [k.id]: { total: aData.summary.total_requests || 0, blocked: aData.summary.blocked_requests || 0 },
+            [k.id]: { total: summary.total_requests || 0, blocked: summary.blocked_requests || 0 },
           }));
         }
       });
