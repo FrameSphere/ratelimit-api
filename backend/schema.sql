@@ -68,7 +68,22 @@ CREATE TABLE IF NOT EXISTS analytics_hourly (
     FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE
 );
 
--- Indexes for performance
+-- Alert Configurations (Pro Feature)
+CREATE TABLE IF NOT EXISTS alert_configs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    api_key_id INTEGER NOT NULL,
+    name TEXT NOT NULL DEFAULT 'Alert',
+    webhook_url TEXT NOT NULL,
+    webhook_type TEXT NOT NULL DEFAULT 'custom', -- 'slack', 'discord', 'custom'
+    threshold_429_pct INTEGER DEFAULT 10,        -- alert when blocked% > this
+    threshold_spike_pct INTEGER DEFAULT 200,     -- alert when traffic spikes > this %
+    threshold_near_limit_pct INTEGER DEFAULT 80, -- alert when usage > this %
+    enabled INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_alert_configs_api_key ON alert_configs(api_key_id);
+
 CREATE INDEX IF NOT EXISTS idx_api_keys_user ON api_keys(user_id);
 CREATE INDEX IF NOT EXISTS idx_api_keys_key ON api_keys(api_key);
 CREATE INDEX IF NOT EXISTS idx_ratelimit_configs_api_key ON ratelimit_configs(api_key_id);

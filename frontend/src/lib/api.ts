@@ -86,8 +86,15 @@ class ApiClient {
         ...options,
         headers: { ...headers, ...(options.headers || {}) },
       });
-      const data = await response.json();
-      if (!response.ok) return { error: data.error || 'Request failed' };
+      // Safe JSON parse — Cloudflare may return HTML on 404/503
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {
+        // non-JSON response (e.g. Cloudflare HTML error page)
+        if (!response.ok) return { error: `HTTP ${response.status}: Route not found or server error` };
+      }
+      if (!response.ok) return { error: data?.error || `HTTP ${response.status}` };
       return { data };
     } catch (error) {
       console.error('API request error:', error);
@@ -207,6 +214,46 @@ class ApiClient {
     return this.request<{ plan: string; customerId: string | null; subscriptionId: string | null }>(
       '/api/stripe/status'
     );
+  }
+
+  // ── Alert Configs ───────────────────────────────────────────────────────────
+
+  async getAlerts(apiKeyId: number) {
+    return this.request<{ alerts: any[] }>(`/api/alerts/${apiKeyId}`);
+  }
+
+  async createAlert(data: {
+    apiKeyId: number;
+    name: string;
+    webhookUrl: string;
+    webhookType: 'slack' | 'discord' | 'custom';
+    threshold429Pct: number;
+    thresholdSpikePct: number;
+    thresholdNearLimitPct: number;
+    enabled: boolean;
+  }) {
+    return this.request<{ alert: any }>('/api/alerts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateAlert(id: number, data: Partial<any>) {
+    return this.request<{ alert: any }>(`/api/alerts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteAlert(id: number) {
+    return this.request<{ message: string }>(`/api/alerts/${id}`, { method: 'DELETE' });
+  }
+
+  async testWebhook(webhookUrl: string, webhookType: string) {
+    return this.request<{ success: boolean; message: string }>('/api/alerts/test', {
+      method: 'POST',
+      body: JSON.stringify({ webhookUrl, webhookType }),
+    });
   }
 }
 

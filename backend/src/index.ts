@@ -15,6 +15,7 @@ import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimi
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit } from './ratelimit/checker';
 import { getAnalytics, getRecentLogs } from './analytics/handlers';
+import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
   createCheckoutSession,
   createPortalSession,
@@ -81,6 +82,13 @@ app.delete('/api/filters/:id', deleteFilter);
 // Analytics
 app.get('/api/analytics/:apiKeyId', getAnalytics);
 app.get('/api/logs/:apiKeyId', getRecentLogs);
+
+// Alerts (Pro)
+app.get('/api/alerts/:apiKeyId', getAlerts);
+app.post('/api/alerts', createAlert);
+app.put('/api/alerts/:id', updateAlert);
+app.delete('/api/alerts/:id', deleteAlert);
+app.post('/api/alerts/test', testWebhook);
 
 // Stripe
 app.post('/api/stripe/checkout', createCheckoutSession);
