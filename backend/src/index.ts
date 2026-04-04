@@ -10,7 +10,7 @@ import {
   framesphereOAuthInit, framesphereOAuthCallback
 } from './auth/oauth';
 
-import { createApiKey, getApiKeys, deleteApiKey } from './ratelimit/api-keys';
+import { createApiKey, getApiKeys, updateApiKey, deleteApiKey } from './ratelimit/api-keys';
 import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimit/configs';
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit } from './ratelimit/checker';
@@ -64,6 +64,7 @@ app.delete('/auth/account', deleteAccount);
 // API Keys
 app.post('/api/keys', createApiKey);
 app.get('/api/keys', getApiKeys);
+app.put('/api/keys/:id', updateApiKey);
 app.delete('/api/keys/:id', deleteApiKey);
 
 // Configs

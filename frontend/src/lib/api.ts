@@ -128,6 +128,13 @@ class ApiClient {
     return this.request<{ apiKeys: ApiKey[] }>('/api/keys');
   }
 
+  async toggleApiKey(id: number, isActive: boolean) {
+    return this.request<{ message: string }>(`/api/keys/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
   async deleteApiKey(id: number) {
     return this.request<{ message: string }>(`/api/keys/${id}`, { method: 'DELETE' });
   }

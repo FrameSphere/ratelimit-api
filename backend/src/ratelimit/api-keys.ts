@@ -49,6 +49,39 @@ export async function getApiKeys(c: Context) {
   }
 }
 
+export async function updateApiKey(c: Context) {
+  try {
+    const user = c.get('user');
+    const { id } = c.req.param();
+    const body = await c.req.json();
+
+    const apiKey = await c.env.DB.prepare(
+      'SELECT id FROM api_keys WHERE id = ? AND user_id = ?'
+    ).bind(id, user.id).first();
+
+    if (!apiKey) {
+      return c.json({ error: 'API key not found' }, 404);
+    }
+
+    if (body.isActive !== undefined) {
+      await c.env.DB.prepare(
+        'UPDATE api_keys SET is_active = ? WHERE id = ?'
+      ).bind(body.isActive ? 1 : 0, id).run();
+    }
+
+    if (body.keyName) {
+      await c.env.DB.prepare(
+        'UPDATE api_keys SET key_name = ? WHERE id = ?'
+      ).bind(body.keyName, id).run();
+    }
+
+    return c.json({ message: 'API key updated successfully' });
+  } catch (error) {
+    console.error('Update API key error:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
+}
+
 export async function deleteApiKey(c: Context) {
   try {
     const user = c.get('user');
