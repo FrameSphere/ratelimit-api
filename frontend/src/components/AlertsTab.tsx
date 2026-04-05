@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import { PRO_FEATURES } from '../lib/plans';
+import { PRO_FEATURES, ProFeatureFlag } from '../lib/plans';
 
 interface AlertsTabProps {
   apiKeyId: number | null;
