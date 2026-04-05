@@ -7,12 +7,13 @@ import { Analytics } from './Analytics';
 import { AlertsTab } from './AlertsTab';
 import { SandboxTab } from './SandboxTab';
 import { SupportTab } from './SupportTab';
+import { NearLimitPanel } from './NearLimitPanel';
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
-type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'billing' | 'support';
+type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'nearlimit' | 'billing' | 'support';
 
 const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boolean }[] = [
   {
@@ -61,6 +62,16 @@ const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boo
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'nearlimit',
+    label: 'Near-Limit',
+    proTag: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
       </svg>
     ),
   },
@@ -158,6 +169,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
     analytics: { title: 'Analytics',           desc: selectedApiKeyName ? `Traffic & Blockierungen für „${selectedApiKeyName}"` : 'Wähle einen API Key um Daten zu sehen.' },
     alerts:    { title: 'Alerts & Webhooks',   desc: selectedApiKeyName ? `Benachrichtigungen für „${selectedApiKeyName}"` : 'Wähle einen Key und richte Webhook-Alerts ein.' },
     sandbox:   { title: 'Test-Modus / Sandbox', desc: 'Simuliere Requests gegen deine Rate Limit Konfiguration.' },
+    nearlimit: { title: 'Near-Limit Übersicht', desc: 'Alle Keys auf einen Blick — wer ist wie nah am Limit?' },
     billing:   { title: 'Billing',             desc: 'Dein Abo, Plan-Details und Rechnungen.' },
     support:   { title: 'Support',             desc: 'Tickets und Team-Kommunikation.' },
   };
@@ -229,7 +241,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
           <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', margin: '0.4rem 0.5rem' }} />
 
           <SideNavSection label="Pro Features">
-            {NAV_ITEMS.slice(3, 5).map(item => (
+            {NAV_ITEMS.filter(i => ['alerts','sandbox','nearlimit'].includes(i.id)).map(item => (
               <SideNavItem
                 key={item.id}
                 icon={item.icon}
@@ -244,7 +256,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
           <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', margin: '0.4rem 0.5rem' }} />
 
           <SideNavSection label="Konto">
-            {NAV_ITEMS.slice(5).map(item => (
+            {NAV_ITEMS.filter(i => ['billing','support'].includes(i.id)).map(item => (
               <SideNavItem
                 key={item.id}
                 icon={item.icon}
@@ -402,7 +414,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           {activeTab === 'analytics' && (
             selectedApiKey
-              ? <Analytics apiKeyId={selectedApiKey} apiKeyName={selectedApiKeyName} />
+              ? <Analytics apiKeyId={selectedApiKey} apiKeyName={selectedApiKeyName} isPro={isPro} onUpgrade={() => window.location.href = '/pricing'} />
               : <NoKeyPlaceholder onGoToKeys={() => setActiveTab('keys')} label="Analytics" />
           )}
 
@@ -421,6 +433,14 @@ export function Dashboard({ onLogout }: DashboardProps) {
               apiKeyName={selectedApiKeyName}
               isPro={isPro}
               onUpgrade={() => window.location.href = '/pricing'}
+            />
+          )}
+
+          {activeTab === 'nearlimit' && (
+            <NearLimitPanel
+              isPro={isPro}
+              onUpgrade={() => window.location.href = '/pricing'}
+              onSelectKey={(id, tab) => { setSelectedApiKey(id); setActiveTab(tab); }}
             />
           )}
 

@@ -190,11 +190,34 @@ class ApiClient {
   // ── Analytics ─────────────────────────────────────────────────────────────
 
   async getAnalytics(apiKeyId: number, range: string = '24h') {
-    return this.request<AnalyticsData>(`/api/analytics/${apiKeyId}?range=${range}`);
+    return this.request<any>(`/api/analytics/${apiKeyId}?range=${range}`);
   }
 
-  async getRecentLogs(apiKeyId: number, limit: number = 50) {
-    return this.request<{ logs: RequestLog[] }>(`/api/logs/${apiKeyId}?limit=${limit}`);
+  async getRecentLogs(apiKeyId: number, limit: number = 100, filters?: {
+    ip?: string; endpoint?: string; status?: string; method?: string;
+  }) {
+    const params = new URLSearchParams({ limit: String(limit) });
+    if (filters?.ip) params.set('ip', filters.ip);
+    if (filters?.endpoint) params.set('endpoint', filters.endpoint);
+    if (filters?.status) params.set('status', filters.status);
+    if (filters?.method) params.set('method', filters.method);
+    return this.request<{ logs: RequestLog[] }>(`/api/logs/${apiKeyId}?${params}`);
+  }
+
+  async exportLogs(apiKeyId: number, range: string = '7d') {
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (this.token) (headers as any)['Authorization'] = `Bearer ${this.token}`;
+    const response = await fetch(`${API_BASE_URL}/api/logs/${apiKeyId}/export?range=${range}`, { headers });
+    if (!response.ok) throw new Error('Export failed');
+    return response.blob();
+  }
+
+  async getKeyUsage(apiKeyId: number) {
+    return this.request<{ usage: any }>(`/api/analytics/${apiKeyId}/usage`);
+  }
+
+  async getAllKeysUsage() {
+    return this.request<{ keys: any[] }>('/api/analytics/all/usage');
   }
 
   // ── Stripe ────────────────────────────────────────────────────────────────

@@ -14,7 +14,7 @@ import { createApiKey, getApiKeys, updateApiKey, deleteApiKey } from './ratelimi
 import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimit/configs';
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit } from './ratelimit/checker';
-import { getAnalytics, getRecentLogs } from './analytics/handlers';
+import { getAnalytics, getRecentLogs, exportLogsCsv, getCurrentUsage, getAllKeysUsage } from './analytics/handlers';
 import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
   createCheckoutSession,
@@ -81,7 +81,10 @@ app.delete('/api/filters/:id', deleteFilter);
 
 // Analytics
 app.get('/api/analytics/:apiKeyId', getAnalytics);
+app.get('/api/analytics/:apiKeyId/usage', getCurrentUsage);
+app.get('/api/analytics/all/usage', getAllKeysUsage);
 app.get('/api/logs/:apiKeyId', getRecentLogs);
+app.get('/api/logs/:apiKeyId/export', exportLogsCsv);
 
 // Alerts (Pro)
 app.get('/api/alerts/:apiKeyId', getAlerts);
