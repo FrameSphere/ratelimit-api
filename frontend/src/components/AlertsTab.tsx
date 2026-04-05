@@ -28,6 +28,13 @@ const WEBHOOK_TYPES = [
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
     placeholder: 'https://your-server.com/webhook',
   },
+  {
+    id: 'email',
+    label: 'Email',
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+    placeholder: 'alerts@deinefirma.com',
+    isEmail: true,
+  },
 ];
 
 const AlertIcon = () => (
@@ -63,7 +70,9 @@ export function AlertsTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: AlertsTabP
   const [form, setForm] = useState({
     name: '',
     webhookUrl: '',
-    webhookType: 'slack' as 'slack' | 'discord' | 'custom',
+    webhookType: 'slack' as 'slack' | 'discord' | 'custom' | 'email',
+    email: '',
+    emailEnabled: false,
     threshold429Pct: 10,
     thresholdSpikePct: 200,
     thresholdNearLimitPct: 80,
@@ -86,10 +95,18 @@ export function AlertsTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: AlertsTabP
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!apiKeyId) return;
+    if (form.webhookType !== 'email' && !form.webhookUrl) { alert('Webhook URL erforderlich'); return; }
+    if (form.webhookType === 'email' && !form.email) { alert('Email-Adresse erforderlich'); return; }
     setSaving(true);
-    const { error } = await api.createAlert({ ...form, apiKeyId });
+    const payload = {
+      ...form,
+      apiKeyId,
+      emailEnabled: form.webhookType === 'email',
+      webhookUrl: form.webhookType === 'email' ? null : form.webhookUrl,
+    };
+    const { error } = await api.createAlert(payload as any);
     if (error) { alert(error); setSaving(false); return; }
-    setForm({ name: '', webhookUrl: '', webhookType: 'slack', threshold429Pct: 10, thresholdSpikePct: 200, thresholdNearLimitPct: 80, enabled: true });
+    setForm({ name: '', webhookUrl: '', webhookType: 'slack', email: '', emailEnabled: false, threshold429Pct: 10, thresholdSpikePct: 200, thresholdNearLimitPct: 80, enabled: true });
     setShowCreate(false);
     await loadAlerts();
     setSaving(false);
@@ -200,15 +217,37 @@ export function AlertsTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: AlertsTabP
               </div>
             </div>
 
+            {/* Email input (shown only for email type) */}
+            {form.webhookType === 'email' && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={labelStyle}>Email-Adresse</label>
+                <input
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  placeholder="alerts@deinefirma.com"
+                  type="email"
+                  required
+                  style={inputStyle}
+                  onFocus={e => e.target.style.borderColor = 'rgba(245,158,11,0.5)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+                <div style={{ marginTop: '0.35rem', fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>
+                  Benötigt RESEND_API_KEY im Worker-Environment. Email kommt von alerts@ratelimit-api.com.
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.875rem', marginBottom: '1rem' }}>
               <div>
                 <label style={labelStyle}>Name</label>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="z.B. Production Alert" style={inputStyle} onFocus={e => e.target.style.borderColor = 'rgba(245,158,11,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
               </div>
-              <div>
-                <label style={labelStyle}>Webhook URL</label>
-                <input value={form.webhookUrl} onChange={e => setForm(f => ({ ...f, webhookUrl: e.target.value }))} required placeholder={WEBHOOK_TYPES.find(w => w.id === form.webhookType)?.placeholder} style={inputStyle} onFocus={e => e.target.style.borderColor = 'rgba(245,158,11,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
-              </div>
+              {form.webhookType !== 'email' && (
+                <div>
+                  <label style={labelStyle}>Webhook URL</label>
+                  <input value={form.webhookUrl} onChange={e => setForm(f => ({ ...f, webhookUrl: e.target.value }))} required placeholder={WEBHOOK_TYPES.find(w => w.id === form.webhookType)?.placeholder} style={inputStyle} onFocus={e => e.target.style.borderColor = 'rgba(245,158,11,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+                </div>
+              )}
             </div>
 
             {/* Thresholds */}

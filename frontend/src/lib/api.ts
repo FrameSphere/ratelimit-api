@@ -148,10 +148,15 @@ class ApiClient {
 
   // ── Configs ───────────────────────────────────────────────────────────────
 
-  async createConfig(apiKeyId: number, name: string, maxRequests: number, windowSeconds: number) {
+  async createConfig(apiKeyId: number, name: string, maxRequests: number, windowSeconds: number, opts?: {
+    endpointPattern?: string | null;
+    algorithm?: 'sliding_window' | 'token_bucket';
+    burstSize?: number | null;
+    refillRate?: number | null;
+  }) {
     return this.request<{ config: RateLimitConfig }>('/api/configs', {
       method: 'POST',
-      body: JSON.stringify({ apiKeyId, name, maxRequests, windowSeconds }),
+      body: JSON.stringify({ apiKeyId, name, maxRequests, windowSeconds, ...opts }),
     });
   }
 
@@ -159,7 +164,12 @@ class ApiClient {
     return this.request<{ configs: RateLimitConfig[] }>(`/api/configs/${apiKeyId}`);
   }
 
-  async updateConfig(id: number, data: Partial<RateLimitConfig>) {
+  async updateConfig(id: number, data: Partial<RateLimitConfig> & {
+    endpointPattern?: string | null;
+    algorithm?: string;
+    burstSize?: number | null;
+    refillRate?: number | null;
+  }) {
     return this.request<{ config: RateLimitConfig }>(`/api/configs/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -187,7 +197,26 @@ class ApiClient {
     return this.request<{ message: string }>(`/api/filters/${id}`, { method: 'DELETE' });
   }
 
-  // ── Analytics ─────────────────────────────────────────────────────────────
+  // ── Rate Limit Status (Live Headers) ────────────────────────────────────────
+
+  async getRateLimitStatus(apiKey: string, endpoint?: string) {
+    const params = new URLSearchParams({ apiKey });
+    if (endpoint) params.set('endpoint', endpoint);
+    return this.request<any>(`/check/status?${params}`);
+  }
+
+  // ── Adaptive Rate Limiting (Pro) ─────────────────────────────────────────────
+
+  async getAdaptiveSuggestions(apiKeyId: number) {
+    return this.request<{ suggestions: any[] }>(`/api/adaptive/${apiKeyId}`);
+  }
+
+  async applyAdaptiveSuggestion(configId: number) {
+    return this.request<{ message: string; newLimit: number }>('/api/adaptive/apply', {
+      method: 'POST',
+      body: JSON.stringify({ configId }),
+    });
+  }
 
   async getAnalytics(apiKeyId: number, range: string = '24h') {
     return this.request<any>(`/api/analytics/${apiKeyId}?range=${range}`);

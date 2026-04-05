@@ -63,15 +63,20 @@ export function SandboxTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: SandboxTa
     for (let i = 0; i < Math.min(burstCount, 50); i++) {
       const start = Date.now();
       try {
-        const headers: Record<string, string> = {
-          'X-API-Key': apiKey,
-          'Content-Type': 'application/json',
-        };
-        if (customUserAgent) headers['User-Agent'] = customUserAgent;
-        if (customIp) headers['X-Forwarded-For'] = customIp;
+        // Build query params — User-Agent CANNOT be set via browser fetch (forbidden header)
+        // Pass via ?ua= and ?ip= query params instead
+        const params = new URLSearchParams({
+          endpoint,
+          method,
+        });
+        if (customUserAgent) params.set('ua', customUserAgent);
+        if (customIp) params.set('ip', customIp);
 
-        const checkUrl = `${API_BASE_URL}/check?endpoint=${encodeURIComponent(endpoint)}&method=${method}`;
-        const res = await fetch(checkUrl, { method: 'GET', headers });
+        const checkUrl = `${API_BASE_URL}/check?${params}`;
+        const res = await fetch(checkUrl, {
+          method: 'GET',
+          headers: { 'X-API-Key': apiKey },
+        });
         const elapsed = Date.now() - start;
 
         let data: any = {};
@@ -79,27 +84,30 @@ export function SandboxTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: SandboxTa
 
         const limit = parseInt(res.headers.get('X-RateLimit-Limit') || '0') || data?.limit || 100;
         const remaining = parseInt(res.headers.get('X-RateLimit-Remaining') || '-1');
-        const used = remaining >= 0 ? limit - remaining : (data?.requests_made || i + 1);
-        const usagePct = Math.round((used / limit) * 100);
+        const used = remaining >= 0 ? limit - remaining : (data?.limit ? data.limit - (data.remaining ?? 0) : i + 1);
+        const usagePct = limit > 0 ? Math.round((used / limit) * 100) : 0;
 
         newResults.push({
           index: i + 1,
-          allowed: res.status !== 429,
+          allowed: res.status !== 429 && res.status !== 403,
           reason: res.status === 429
-            ? (data?.error || 'Rate limit erreicht (429 Too Many Requests)')
+            ? (data?.reason || 'Rate limit erreicht (429)')
             : res.status === 403
-            ? (data?.error || 'Blockiert durch Filter-Regel')
-            : (data?.message || 'Request erlaubt'),
+            ? (data?.reason || 'Blockiert durch Filter (403)')
+            : res.status === 401
+            ? 'Ungültiger API Key'
+            : (data?.message || data?.reason || 'Request erlaubt'),
           requestsUsed: used,
           requestsMax: limit,
           usagePct,
           responseTime: elapsed,
           headers: {
-            'X-RateLimit-Limit': res.headers.get('X-RateLimit-Limit') || `${limit}`,
-            'X-RateLimit-Remaining': res.headers.get('X-RateLimit-Remaining') || `${remaining >= 0 ? remaining : limit - used}`,
-            'X-RateLimit-Reset': res.headers.get('X-RateLimit-Reset') || '—',
-            'Retry-After': res.headers.get('Retry-After') || '—',
             'Status': String(res.status),
+            'X-RateLimit-Limit': res.headers.get('X-RateLimit-Limit') || String(limit),
+            'X-RateLimit-Remaining': res.headers.get('X-RateLimit-Remaining') || String(remaining >= 0 ? remaining : limit - used),
+            'X-RateLimit-Reset': res.headers.get('X-RateLimit-Reset') || '—',
+            'X-RateLimit-Algorithm': res.headers.get('X-RateLimit-Algorithm') || data?.algorithm || '—',
+            'Retry-After': res.headers.get('Retry-After') || (data?.retryAfter ? String(data.retryAfter) : '—'),
           },
         });
 

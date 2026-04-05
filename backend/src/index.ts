@@ -13,7 +13,8 @@ import {
 import { createApiKey, getApiKeys, updateApiKey, deleteApiKey } from './ratelimit/api-keys';
 import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimit/configs';
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
-import { checkRateLimit } from './ratelimit/checker';
+import { checkRateLimit, getRateLimitStatus } from './ratelimit/checker';
+import { getAdaptiveSuggestions, applyAdaptiveSuggestion } from './ratelimit/adaptive';
 import { getAnalytics, getRecentLogs, exportLogsCsv, getCurrentUsage, getAllKeysUsage } from './analytics/handlers';
 import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
@@ -29,8 +30,8 @@ app.use('/*', corsMiddleware);
 
 app.get('/', (c) => c.json({
   message: 'Rate Limit API is running',
-  version: '2.0.0',
-  plans: ['free', 'pro'],
+  version: '3.0.0',
+  features: ['sliding_window', 'token_bucket', 'per_endpoint_limits', 'adaptive_rl', 'email_alerts'],
 }));
 
 // ── Public routes ──────────────────────────────────────────────────────────
@@ -46,6 +47,9 @@ app.get('/auth/oauth/framesphere/callback', framesphereOAuthCallback);
 
 app.get('/check', checkRateLimit);
 app.post('/check', checkRateLimit);
+
+// Live header debug (requires X-API-Key header or ?apiKey query param)
+app.get('/check/status', getRateLimitStatus);
 
 // Stripe webhook — raw body required, BEFORE auth middleware
 app.post('/stripe/webhook', handleStripeWebhook);
@@ -68,7 +72,7 @@ app.get('/api/keys', getApiKeys);
 app.put('/api/keys/:id', updateApiKey);
 app.delete('/api/keys/:id', deleteApiKey);
 
-// Configs
+// Configs (with per-endpoint + algorithm support)
 app.post('/api/configs', createConfig);
 app.get('/api/configs/:apiKeyId', getConfigs);
 app.put('/api/configs/:id', updateConfig);
@@ -79,12 +83,18 @@ app.post('/api/filters', createFilter);
 app.get('/api/filters/:configId', getFilters);
 app.delete('/api/filters/:id', deleteFilter);
 
-// Analytics
-app.get('/api/analytics/:apiKeyId', getAnalytics);
+// Analytics — IMPORTANT: static routes BEFORE parameterized ones!
+app.get('/api/analytics/all/usage', getAllKeysUsage);        // ← must be before /:apiKeyId
 app.get('/api/analytics/:apiKeyId/usage', getCurrentUsage);
-app.get('/api/analytics/all/usage', getAllKeysUsage);
-app.get('/api/logs/:apiKeyId', getRecentLogs);
+app.get('/api/analytics/:apiKeyId', getAnalytics);
+
+// Logs
 app.get('/api/logs/:apiKeyId/export', exportLogsCsv);
+app.get('/api/logs/:apiKeyId', getRecentLogs);
+
+// Adaptive Rate Limiting (Pro)
+app.get('/api/adaptive/:apiKeyId', getAdaptiveSuggestions);
+app.post('/api/adaptive/apply', applyAdaptiveSuggestion);
 
 // Alerts (Pro)
 app.get('/api/alerts/:apiKeyId', getAlerts);
