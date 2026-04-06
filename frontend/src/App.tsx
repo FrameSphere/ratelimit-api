@@ -11,6 +11,7 @@ import { VergleichPage } from './components/VergleichPage';
 import { DocsPage } from './components/DocsPage';
 import { PricingPage } from './components/PricingPage';
 import { PaymentSuccess } from './components/PaymentSuccess';
+import { WelcomeOnboarding } from './components/WelcomeOnboarding';
 import { CloudflareGuide } from './components/blog/CloudflareGuide';
 import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
@@ -70,6 +71,13 @@ export default function App() {
 
         {/* Stripe success page – accessible when logged in or logged out */}
         <Route path="/payment/success" element={<PaymentSuccess />} />
+
+        {/* Welcome onboarding – shown once after registration */}
+        <Route path="/welcome" element={
+          localStorage.getItem('onboarding_pending')
+            ? <WelcomeOnboarding />
+            : <Navigate to="/dashboard" replace />
+        } />
 
         {/* Blog */}
         <Route path="/blog/cloudflare-rate-limiting" element={<CloudflareGuide />} />

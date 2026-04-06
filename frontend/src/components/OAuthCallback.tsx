@@ -49,9 +49,14 @@ export function OAuthCallback() {
           api.setToken(data.token);
           setStatus('success');
           
-          // Redirect to dashboard with full page reload
           setTimeout(() => {
-            window.location.href = '/dashboard';
+            if (data.isNewUser) {
+              localStorage.setItem('onboarding_pending', '1');
+              if (data.user?.name) localStorage.setItem('welcome_name', data.user.name);
+              window.location.href = '/welcome';
+            } else {
+              window.location.href = '/dashboard';
+            }
           }, 1000);
         } else {
           throw new Error('Kein Token erhalten');

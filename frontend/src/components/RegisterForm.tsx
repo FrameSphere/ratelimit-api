@@ -28,8 +28,10 @@ export function RegisterForm({ onSuccess, onToggleMode }: RegisterFormProps) {
 
     if (data?.token) {
       api.setToken(data.token);
+      localStorage.setItem('onboarding_pending', '1');
+      if (data.user?.name) localStorage.setItem('welcome_name', data.user.name);
       onSuccess();
-      window.location.href = '/dashboard';
+      window.location.href = '/welcome';
     }
 
     setLoading(false);
