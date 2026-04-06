@@ -59,6 +59,19 @@ function buildAlertEmailHtml(event: string, message: string, keyName: string): s
 
 // ── CRUD ──────────────────────────────────────────────────────────────────────
 
+// Schema detection for optional email columns
+let _alertHasEmailCols: boolean | null = null;
+async function alertHasEmailCols(db: any): Promise<boolean> {
+  if (_alertHasEmailCols !== null) return _alertHasEmailCols;
+  try {
+    await db.prepare('SELECT email FROM alert_configs LIMIT 0').run();
+    _alertHasEmailCols = true;
+  } catch {
+    _alertHasEmailCols = false;
+  }
+  return _alertHasEmailCols;
+}
+
 export async function getAlerts(c: Context) {
   try {
     const user = c.get('user');
@@ -99,18 +112,37 @@ export async function createAlert(c: Context) {
       return c.json({ error: 'Either webhookUrl or email is required' }, 400);
     }
 
-    const result = await c.env.DB.prepare(
-      `INSERT INTO alert_configs
-        (api_key_id, name, webhook_url, webhook_type, email, email_enabled,
-         threshold_429_pct, threshold_spike_pct, threshold_near_limit_pct, enabled)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(
-      apiKeyId, name || 'Alert',
-      webhookUrl || null, webhookType || 'custom',
-      email || null, emailEnabled ? 1 : 0,
-      threshold429Pct ?? 10, thresholdSpikePct ?? 200, thresholdNearLimitPct ?? 80,
-      enabled ? 1 : 0,
-    ).run();
+    const hasEmail = await alertHasEmailCols(c.env.DB);
+    let result: any;
+
+    if (hasEmail) {
+      result = await c.env.DB.prepare(
+        `INSERT INTO alert_configs
+          (api_key_id, name, webhook_url, webhook_type, email, email_enabled,
+           threshold_429_pct, threshold_spike_pct, threshold_near_limit_pct, enabled)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        apiKeyId, name || 'Alert',
+        webhookUrl || null, webhookType || 'custom',
+        email || null, emailEnabled ? 1 : 0,
+        threshold429Pct ?? 10, thresholdSpikePct ?? 200, thresholdNearLimitPct ?? 80,
+        enabled ? 1 : 0,
+      ).run();
+    } else {
+      // Legacy schema without email columns
+      if (!webhookUrl) return c.json({ error: 'webhookUrl is required (email not yet supported, run migrations)' }, 400);
+      result = await c.env.DB.prepare(
+        `INSERT INTO alert_configs
+          (api_key_id, name, webhook_url, webhook_type,
+           threshold_429_pct, threshold_spike_pct, threshold_near_limit_pct, enabled)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        apiKeyId, name || 'Alert',
+        webhookUrl, webhookType || 'custom',
+        threshold429Pct ?? 10, thresholdSpikePct ?? 200, thresholdNearLimitPct ?? 80,
+        enabled ? 1 : 0,
+      ).run();
+    }
 
     return c.json({ alert: { id: result.meta.last_row_id, ...body } }, 201);
   } catch (error) {
