@@ -16,6 +16,7 @@ import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
 import { ImpressumPage } from './components/ImpressumPage';
 import { DatenschutzPage } from './components/DatenschutzPage';
+import { NutzungsbedingungenPage } from './components/NutzungsbedingungenPage';
 import { api } from './lib/api';
 
 export default function App() {
@@ -94,6 +95,7 @@ export default function App() {
 
         <Route path="/impressum"   element={<ImpressumPage />} />
         <Route path="/datenschutz" element={<DatenschutzPage />} />
+        <Route path="/nutzungsbedingungen" element={<NutzungsbedingungenPage />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
