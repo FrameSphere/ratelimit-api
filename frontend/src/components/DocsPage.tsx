@@ -10,6 +10,8 @@ type SectionId =
   | 'configs'
   | 'filters'
   | 'analytics'
+  | 'adaptive'
+  | 'alerts'
   | 'examples'
   | 'errors'
   | 'support';
@@ -29,6 +31,8 @@ const NAV: NavSection[] = [
   { id: 'configs', label: 'Konfigurationen', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H5m13.2 5.2l-4.2-4.2m0-6l4.2-4.2"/></svg> },
   { id: 'filters', label: 'Filter & Regeln', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg> },
   { id: 'analytics', label: 'Analytics API', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
+  { id: 'adaptive', label: 'Adaptive RL (Pro)', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.04-4.79A2.5 2.5 0 0 1 5 12a2.5 2.5 0 0 1 1.37-2.22 2.5 2.5 0 0 1 2.13-4.78A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.04-4.79A2.5 2.5 0 0 0 19 12a2.5 2.5 0 0 0-1.37-2.22 2.5 2.5 0 0 0-2.13-4.78A2.5 2.5 0 0 0 14.5 2Z"/></svg> },
+  { id: 'alerts', label: 'Webhook Alerts (Pro)', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> },
   { id: 'examples', label: 'Code Beispiele', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg> },
   { id: 'errors', label: 'Status Codes', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
   { id: 'support', label: 'Support', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
@@ -594,6 +598,151 @@ if (!allowed) {
       "allowed": true,
       "user_agent": "Mozilla/5.0...",
       "created_at": "2025-01-15T10:45:12Z"
+    }
+  ]
+}`}</Code>
+          </Section>
+
+          {/* ── Adaptive RL ── */}
+          <Section id="adaptive" title="Adaptive Rate Limiting (Pro)" icon={<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.04-4.79A2.5 2.5 0 0 1 5 12a2.5 2.5 0 0 1 1.37-2.22 2.5 2.5 0 0 1 2.13-4.78A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.04-4.79A2.5 2.5 0 0 0 19 12a2.5 2.5 0 0 0-1.37-2.22 2.5 2.5 0 0 0-2.13-4.78A2.5 2.5 0 0 0 14.5 2Z"/></svg>}>
+            <div style={{ background: 'linear-gradient(135deg,rgba(139,92,246,0.08),rgba(99,102,241,0.08))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 10, padding: '0.875rem 1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <span style={{ fontSize: '0.82rem', color: '#a78bfa', fontWeight: 600 }}>Pro-Feature — benötigt einen aktiven Pro-Plan</span>
+            </div>
+
+            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '1.25rem', fontSize: '0.9rem', lineHeight: 1.7 }}>
+              Adaptive Rate Limiting analysiert deine historischen Traffic-Muster und schlägt automatisch optimierte Limits vor. Basierend auf Tagesverlauf, Spitzenstunden und Anomalien werden Empfehlungen generiert, die du per Knopfdruck anwenden kannst.
+            </p>
+
+            <h3 style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.75rem' }}>Wie es funktioniert</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              {[
+                { step: '1', title: 'Analyse', desc: 'Traffic-Logs der letzten 7 Tage werden ausgewertet' },
+                { step: '2', title: 'Empfehlung', desc: 'Optimales Limit + Zeitfenster wird berechnet' },
+                { step: '3', title: 'Anwendung', desc: 'Mit einem Klick auf die Konfiguration anwenden' },
+              ].map(s => (
+                <div key={s.step} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(139,92,246,0.12)', borderRadius: 10, padding: '0.875rem' }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 700, color: 'white', marginBottom: '0.5rem' }}>{s.step}</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white', marginBottom: 3 }}>{s.title}</div>
+                  <div style={{ fontSize: '0.77rem', color: 'rgba(255,255,255,0.4)' }}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <Endpoint method="GET" path="/api/adaptive/:apiKeyId" desc="Empfehlungen für alle Konfigurationen eines Keys abrufen" />
+            <Endpoint method="POST" path="/api/adaptive/apply" desc="Empfehlung auf eine Konfiguration anwenden" />
+
+            <Code lang="json">{`// GET /api/adaptive/1
+// Authorization: Bearer TOKEN
+
+{
+  "suggestions": [
+    {
+      "configId": 1,
+      "configName": "Standard Limit",
+      "currentLimit": 100,
+      "suggestedLimit": 145,
+      "reason": "Durchschnittliche Nutzung liegt bei 87% des Limits",
+      "confidence": 0.87,
+      "peakHour": "14:00",
+      "avgRequestsPerHour": 93
+    }
+  ]
+}`}</Code>
+
+            <Code lang="json">{`// POST /api/adaptive/apply
+// Authorization: Bearer TOKEN
+
+{ "configId": 1 }
+
+// Response
+{
+  "message": "Limit erfolgreich angepasst",
+  "newLimit": 145
+}`}</Code>
+          </Section>
+
+          {/* ── Alerts ── */}
+          <Section id="alerts" title="Webhook Alerts (Pro)" icon={<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>}>
+            <div style={{ background: 'linear-gradient(135deg,rgba(139,92,246,0.08),rgba(99,102,241,0.08))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 10, padding: '0.875rem 1.1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              </div>
+              <span style={{ fontSize: '0.82rem', color: '#a78bfa', fontWeight: 600 }}>Pro-Feature — benötigt einen aktiven Pro-Plan</span>
+            </div>
+
+            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '1.25rem', fontSize: '0.9rem', lineHeight: 1.7 }}>
+              Richte Webhook-Benachrichtigungen ein, die ausgelöst werden, wenn dein Traffic bestimmte Schwellenwerte erreicht — z.B. viele 429er, plötzliche Traffic-Spitzen oder nahende Limits. Unterstützt Slack, Discord und beliebige Custom-Webhooks.
+            </p>
+
+            <h3 style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.75rem' }}>Alert-Typen</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: '0.625rem', marginBottom: '1.5rem' }}>
+              {[
+                { name: '429-Rate > X%', desc: 'Zu viele geblockte Requests im Zeitfenster', color: '#f87171' },
+                { name: 'Traffic-Spike', desc: 'Plötzlicher Anstieg im Vergleich zum Schnitt', color: '#fbbf24' },
+                { name: 'Near-Limit', desc: 'X% des Limits bereits aufgebraucht', color: '#fb923c' },
+              ].map(a => (
+                <div key={a.name} style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${a.color}25`, borderRadius: 8, padding: '0.75rem' }}>
+                  <code style={{ fontSize: '0.77rem', color: a.color, background: `${a.color}12`, padding: '0.15rem 0.4rem', borderRadius: 4, fontFamily: 'monospace' }}>{a.name}</code>
+                  <div style={{ fontSize: '0.77rem', color: 'rgba(255,255,255,0.4)', marginTop: 6 }}>{a.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <Endpoint method="GET" path="/api/alerts/:apiKeyId" desc="Alle Alert-Konfigurationen eines API Keys" />
+            <Endpoint method="POST" path="/api/alerts" desc="Neuen Alert erstellen" />
+            <Endpoint method="PUT" path="/api/alerts/:id" desc="Alert aktualisieren" />
+            <Endpoint method="DELETE" path="/api/alerts/:id" desc="Alert löschen" />
+            <Endpoint method="POST" path="/api/alerts/test" desc="Webhook testen" />
+
+            <h3 style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.75rem', marginTop: '1.25rem' }}>Alert erstellen</h3>
+            <ParamTable>
+              <Param name="apiKeyId" type="number" req desc="ID des API Keys" />
+              <Param name="name" type="string" req desc="Bezeichnung des Alerts" />
+              <Param name="webhookUrl" type="string" req desc="Ziel-URL für den Webhook" />
+              <Param name="webhookType" type="string" req desc="slack | discord | custom" />
+              <Param name="threshold429Pct" type="number" desc="Schwellenwert: % geblockte Requests (0–100)" />
+              <Param name="thresholdSpikePct" type="number" desc="Schwellenwert: Traffic-Spike in % über Schnitt" />
+              <Param name="thresholdNearLimitPct" type="number" desc="Schwellenwert: % Limit verbraucht" />
+            </ParamTable>
+            <Code lang="json">{`// POST /api/alerts
+// Authorization: Bearer TOKEN
+
+{
+  "apiKeyId": 1,
+  "name": "Production Alert",
+  "webhookUrl": "https://hooks.slack.com/services/T00/B00/xxx",
+  "webhookType": "slack",
+  "threshold429Pct": 20,
+  "thresholdSpikePct": 150,
+  "thresholdNearLimitPct": 85,
+  "enabled": true
+}
+
+// Response 201
+{
+  "alert": {
+    "id": 1,
+    "name": "Production Alert",
+    "webhook_type": "slack",
+    "enabled": 1
+  }
+}`}</Code>
+
+            <h3 style={{ color: 'white', fontWeight: 700, fontSize: '0.95rem', marginBottom: '0.75rem', marginTop: '1.25rem' }}>Webhook Payload (Slack-Format)</h3>
+            <Code lang="json">{`{
+  "text": "*RateLimit Alert: Production Alert*",
+  "attachments": [
+    {
+      "color": "#ff4444",
+      "fields": [
+        { "title": "API Key", "value": "Production API", "short": true },
+        { "title": "Alert-Typ", "value": "429 Rate > 20%", "short": true },
+        { "title": "Aktueller Wert", "value": "34%", "short": true },
+        { "title": "Zeitstempel", "value": "2026-04-06T14:32:00Z", "short": true }
+      ]
     }
   ]
 }`}</Code>

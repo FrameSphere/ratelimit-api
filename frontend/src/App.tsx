@@ -12,6 +12,8 @@ import { DocsPage } from './components/DocsPage';
 import { PricingPage } from './components/PricingPage';
 import { PaymentSuccess } from './components/PaymentSuccess';
 import { WelcomeOnboarding } from './components/WelcomeOnboarding';
+import { TutorialPage } from './components/TutorialPage';
+import { TutorialAdvancedPage } from './components/TutorialAdvancedPage';
 import { CloudflareGuide } from './components/blog/CloudflareGuide';
 import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
@@ -78,6 +80,10 @@ export default function App() {
             ? <WelcomeOnboarding />
             : <Navigate to="/dashboard" replace />
         } />
+
+        {/* Tutorial pages */}
+        <Route path="/tutorial" element={<TutorialPage />} />
+        <Route path="/tutorial/advanced" element={<TutorialAdvancedPage />} />
 
         {/* Blog */}
         <Route path="/blog/cloudflare-rate-limiting" element={<CloudflareGuide />} />
