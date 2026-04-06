@@ -74,7 +74,6 @@ const h2: React.CSSProperties = {
   marginBottom: '0.75rem',
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
-  fontSize: '0.8rem',
 };
 
 const p: React.CSSProperties = {
