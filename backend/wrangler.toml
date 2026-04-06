@@ -19,8 +19,6 @@ HQ_SITE_ID = "ratelimit"
 OAUTH_REDIRECT_URI = "https://ratelimit-api.pages.dev/auth/callback"
 
 # Google OAuth
-GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET = "your-google-client-secret"
 
 # GitHub OAuth
 GITHUB_CLIENT_ID = "Ov23lijYavVjCd1hfkLS"

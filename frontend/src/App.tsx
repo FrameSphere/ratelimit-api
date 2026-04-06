@@ -14,6 +14,8 @@ import { PaymentSuccess } from './components/PaymentSuccess';
 import { CloudflareGuide } from './components/blog/CloudflareGuide';
 import { AlgorithmsGuide } from './components/blog/AlgorithmsGuide';
 import { UseCasesGuide } from './components/blog/UseCasesGuide';
+import { ImpressumPage } from './components/ImpressumPage';
+import { DatenschutzPage } from './components/DatenschutzPage';
 import { api } from './lib/api';
 
 export default function App() {
@@ -89,6 +91,9 @@ export default function App() {
           path="/dashboard"
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
+
+        <Route path="/impressum"   element={<ImpressumPage />} />
+        <Route path="/datenschutz" element={<DatenschutzPage />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
