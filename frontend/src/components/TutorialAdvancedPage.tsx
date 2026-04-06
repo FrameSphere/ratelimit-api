@@ -183,7 +183,7 @@ suggestions.forEach(async (suggestion) => {
 });`}</Code>
 
           <Callout type="tip">
-            <strong style={{ color: '#34d399' }}>Wann automatisch anwenden?</strong> Nutze Empfehlungen mit Konfidenz > 0.8 (80%) automatisiert via API. Bei niedrigerer Konfidenz lieber manuell im Dashboard überprüfen — das kann auf ungewöhnliche Traffic-Muster hindeuten.
+            <strong style={{ color: '#34d399' }}>Wann automatisch anwenden?</strong> Nutze Empfehlungen mit Konfidenz &gt; 0.8 (80%) automatisiert via API. Bei niedrigerer Konfidenz lieber manuell im Dashboard überprüfen — das kann auf ungewöhnliche Traffic-Muster hindeuten.
           </Callout>
         </>
       )
