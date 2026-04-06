@@ -53,7 +53,12 @@ export async function googleOAuthCallback(c: Context) {
     const tokenData = await tokenResponse.json();
     
     if (!tokenData.access_token) {
-      return c.json({ error: 'Failed to get access token' }, 500);
+      console.error('Google token exchange failed:', JSON.stringify(tokenData));
+      return c.json({ 
+        error: 'Failed to get access token', 
+        detail: tokenData.error,
+        description: tokenData.error_description 
+      }, 500);
     }
 
     // Get user info
@@ -249,9 +254,25 @@ async function handleOAuthLogin(c: Context, oauthUser: OAuthUser) {
         email: oauthUser.email,
         name: oauthUser.name
       };
+
+      const token = await generateToken(
+        {
+          id: user.id as number,
+          email: user.email as string,
+          name: user.name as string
+        },
+        c.env.JWT_SECRET
+      );
+
+      return c.json({
+        message: 'OAuth login successful',
+        token,
+        isNewUser: true,
+        user: { id: user.id, email: user.email, name: user.name }
+      });
     }
 
-    // Generate JWT token
+    // Existing user
     const token = await generateToken(
       {
         id: user.id as number,
@@ -264,11 +285,8 @@ async function handleOAuthLogin(c: Context, oauthUser: OAuthUser) {
     return c.json({
       message: 'OAuth login successful',
       token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name
-      }
+      isNewUser: false,
+      user: { id: user.id, email: user.email, name: user.name }
     });
   } catch (error) {
     console.error('OAuth login error:', error);
