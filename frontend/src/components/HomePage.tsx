@@ -85,6 +85,12 @@ export function HomePage() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               Docs
             </a>
+            <a href="/tutorial" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
+               onMouseEnter={e => (e.currentTarget.style.color = 'white')}
+               onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Tutorial
+            </a>
             <a href="/changelog" style={{ color: 'rgba(255,255,255,0.65)', textDecoration: 'none', padding: '6px 14px', borderRadius: 7, fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6, transition: 'color .15s' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}>

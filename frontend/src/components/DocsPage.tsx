@@ -275,6 +275,18 @@ export function DocsPage() {
               Kostenlos starten →
             </a>
           </div>
+
+          {/* Tutorial CTA */}
+          <div style={{ marginTop: '0.75rem', background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 12, padding: '1rem' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Tutorial
+            </div>
+            <div style={{ fontSize: '0.73rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.75rem', lineHeight: 1.5 }}>Schritt-für-Schritt alle Features kennenlernen.</div>
+            <a href="/tutorial" style={{ display: 'block', textAlign: 'center', padding: '0.45rem', borderRadius: 7, border: '1px solid rgba(99,102,241,0.3)', background: 'rgba(99,102,241,0.1)', color: '#a5b4fc', textDecoration: 'none', fontSize: '0.78rem', fontWeight: 700 }}>
+              Tutorial starten →
+            </a>
+          </div>
         </aside>
 
         {/* ── Main content ── */}
@@ -924,7 +936,7 @@ curl -X POST ${BASE_URL}/check \\
       {/* Footer */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '2rem 1.5rem', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[['Startseite', '/'], ['Dashboard', '/dashboard'], ['Changelog', '/changelog'], ['FAQ', '/faq'], ['Impressum', '/impressum']].map(([l, h]) => (
+          {[['Startseite', '/'], ['Dashboard', '/dashboard'], ['Tutorial', '/tutorial'], ['Changelog', '/changelog'], ['FAQ', '/faq'], ['Impressum', '/impressum']].map(([l, h]) => (
             <a key={h} href={h} style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}
                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}>{l}</a>
