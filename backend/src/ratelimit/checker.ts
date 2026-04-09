@@ -1,5 +1,6 @@
 import { Context } from 'hono';
 import { reportErrorToHQ } from '../hq-reporter';
+import { checkAutoBlock, recordViolation } from './autoblock';
 
 // ── Schema detection ──────────────────────────────────────────────────────────
 
@@ -132,8 +133,17 @@ export async function checkRateLimit(c: Context) {
       return c.json({ allowed: true, message: 'No rate limit configured', limit: 0, remaining: 0 });
     }
 
+    // ── Check auto-block (IP temporarily banned after N violations) ──
+    const isAutoBlocked = await checkAutoBlock(c.env.DB, apiKeyId, ip);
+    if (isAutoBlocked) {
+      await logRequest(c, apiKeyId, ip, userAgent, endpoint, method, 403, true, 'auto_blocked');
+      setRLHeaders(c, 0, 0, 0, config.algorithm || 'sliding_window', null);
+      return c.json({ allowed: false, blocked: true, reason: 'auto_blocked', message: 'IP temporarily blocked due to repeated violations' }, 403);
+    }
+
     // ── Check filters ──
-    const filterResult = await checkFilters(c, config.id as number, ip, userAgent);
+    const country = c.req.header('CF-IPCountry') || c.req.query('country') || '';
+    const filterResult = await checkFilters(c, config.id as number, ip, userAgent, country);
     if (filterResult.blocked) {
       await logRequest(c, apiKeyId, ip, userAgent, endpoint, method, 403, true, filterResult.reason || 'filter');
       setRLHeaders(c, 0, 0, 0, config.algorithm || 'sliding_window', null);
@@ -154,6 +164,7 @@ export async function checkRateLimit(c: Context) {
 
       if (!result.allowed) {
         await logRequest(c, apiKeyId, ip, userAgent, endpoint, method, 429, true, 'token_bucket_exhausted');
+        await recordViolation(c.env.DB, apiKeyId, ip);
         setRLHeaders(c, burstSize, 0, result.resetAt, algorithm, config.burst_size);
         c.res.headers.set('Retry-After', String(Math.max(1, result.resetAt - Math.floor(Date.now() / 1000))));
         return c.json({ allowed: false, reason: 'Token bucket exhausted', limit: burstSize, remaining: 0, resetAt: result.resetAt }, 429);
@@ -178,6 +189,7 @@ export async function checkRateLimit(c: Context) {
 
     if (!allowed) {
       await logRequest(c, apiKeyId, ip, userAgent, endpoint, method, 429, true, 'rate_limit_exceeded');
+      await recordViolation(c.env.DB, apiKeyId, ip);
       setRLHeaders(c, maxRequests, 0, resetAt, effectiveAlgorithm, null);
       c.res.headers.set('Retry-After', String(windowSeconds));
       return c.json({ allowed: false, reason: 'Rate limit exceeded', limit: maxRequests, remaining: 0, resetAt, retryAfter: windowSeconds }, 429);
@@ -294,17 +306,39 @@ function setRLHeaders(c: Context, limit: number, remaining: number, resetAt: num
   if (burst !== null) c.res.headers.set('X-RateLimit-Burst', String(burst));
 }
 
-async function checkFilters(c: Context, configId: number, ip: string, userAgent: string) {
+async function checkFilters(c: Context, configId: number, ip: string, userAgent: string, country: string = '') {
   const { results } = await c.env.DB.prepare(
-    'SELECT rule_type, rule_value, action FROM filter_rules WHERE config_id = ?'
+    'SELECT rule_type, rule_value, action FROM filter_rules WHERE config_id = ? ORDER BY id ASC'
   ).bind(configId).all();
 
   for (const rule of results) {
     const { rule_type: type, rule_value: value, action } = rule as any;
-    if (type === 'ip_whitelist' && ip === value && action === 'allow') return { blocked: false };
-    if (type === 'ip_blacklist' && ip === value && action === 'block') return { blocked: true, reason: `IP ${ip} is blacklisted` };
+
+    // IP Whitelist — explicit allow, skip all further checks
+    if (type === 'ip_whitelist' && ip === value && action === 'allow')
+      return { blocked: false };
+
+    // IP Blacklist
+    if (type === 'ip_blacklist' && ip === value && action === 'block')
+      return { blocked: true, reason: `ip_blacklisted` };
+
+    // User-Agent block
     if (type === 'user_agent' && userAgent.toLowerCase().includes((value as string).toLowerCase()) && action === 'block')
-      return { blocked: true, reason: `User-Agent blocked: ${value}` };
+      return { blocked: true, reason: `user_agent_blocked` };
+
+    // Geo Country — rule_value is comma-separated ISO codes e.g. "CN,RU,KP"
+    if (type === 'geo_country') {
+      const codes = (value as string).split(',').map((s: string) => s.trim().toUpperCase()).filter(Boolean);
+      const reqCountry = (country || 'XX').toUpperCase();
+      const matches = codes.includes(reqCountry);
+
+      if (action === 'block' && matches)
+        return { blocked: true, reason: `geo_blocked:${reqCountry}` };
+
+      // geo_allow = allowlist: only these countries pass — everyone else is blocked
+      if (action === 'allow' && !matches)
+        return { blocked: true, reason: `geo_not_in_allowlist:${reqCountry}` };
+    }
   }
   return { blocked: false };
 }

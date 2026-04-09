@@ -8,6 +8,91 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+// ── Block reason human-readable labels ───────────────────────────────────────
+const BLOCK_REASON_LABELS: Record<string, string> = {
+  rate_limit_exceeded:    'Rate Limit erreicht',
+  token_bucket_exhausted: 'Token Bucket leer',
+  filter:                 'Filter-Regel',
+  ip_blacklisted:         'IP gesperrt',
+  user_agent_blocked:     'User-Agent gesperrt',
+};
+
+function formatBlockReason(reason: string): string {
+  if (!reason) return '';
+  if (reason.startsWith('geo_blocked:')) return `🌍 Land gesperrt (${reason.split(':')[1]})`;
+  if (reason.startsWith('geo_not_in_allowlist:')) return `🌍 Land nicht erlaubt (${reason.split(':')[1]})`;
+  return BLOCK_REASON_LABELS[reason] ?? reason;
+}
+
+interface BlockExplanation { title: string; detail: string; fix: string; severity: 'red' | 'yellow' | 'blue'; }
+
+function getBlockExplanation(reason: string, log: any): BlockExplanation {
+  if (!reason || !log.blocked) return { title: 'Request erlaubt', detail: 'Dieser Request hat alle Checks bestanden.', fix: 'Kein Handlungsbedarf.', severity: 'blue' };
+  if (reason === 'rate_limit_exceeded') return { title: 'Rate Limit überschritten', detail: `Die IP ${log.ip_address} hat das konfigurierte Request-Limit überschritten. Der Request wurde mit HTTP 429 abgewiesen.`, fix: 'Erhöhe das Limit in der Konfiguration, oder aktiviere Token Bucket für flexibleres Burst-Handling. Alternativ: IP whitelisten falls bekannter Server.', severity: 'yellow' };
+  if (reason === 'token_bucket_exhausted') return { title: 'Token Bucket leer', detail: `Die IP ${log.ip_address} hat alle verfügbaren Tokens verbraucht. Tokens werden gemäß Refill-Rate aufgefüllt.`, fix: 'Erhöhe burst_size für mehr initiale Tokens oder refill_rate für schnelleres Auffüllen. Bei legitimen Clients: IP whitelisten.', severity: 'yellow' };
+  if (reason === 'ip_blacklisted') return { title: 'IP gesperrt (Blacklist)', detail: `Die IP ${log.ip_address} ist manuell auf der Blacklist und wird unabhängig vom Rate Limit blockiert.`, fix: 'Falls fälschlicherweise blockiert: Entferne die IP aus der IP-Blacklist im Filter-Panel.', severity: 'red' };
+  if (reason === 'auto_blocked') return { title: 'IP automatisch gesperrt', detail: `Die IP ${log.ip_address} wurde automatisch gesperrt, weil sie das konfigurierte Verstöße-Limit innerhalb des Beobachtungsfensters überschritten hat. Die Sperre ist temporär.`, fix: 'Falls false positive: Entsperre die IP manuell im Auto Block Tab. Passe den Threshold oder die Block-Dauer an wenn legitime IPs betroffen sind.', severity: 'red' };
+  if (reason === 'user_agent_blocked') return { title: 'User-Agent blockiert', detail: `Der User-Agent dieses Requests matched eine Block-Regel. Endpoint: ${log.endpoint}`, fix: 'Falls legitimer Client: Entferne oder präzisiere die User-Agent Filter-Regel (Substring-Match).', severity: 'red' };
+  if (reason.startsWith('geo_blocked:')) { const c = reason.split(':')[1]; return { title: `Land gesperrt (🌍 ${c})`, detail: `Requests aus ${c} werden durch eine Geo-Block Regel blockiert.`, fix: `Falls legitimer User: Entferne ${c} aus der Geo-Blacklist oder nutze Geo-Allow-Modus.`, severity: 'red' }; }
+  if (reason.startsWith('geo_not_in_allowlist:')) { const c = reason.split(':')[1]; return { title: `Land nicht in Allowlist (🌍 ${c})`, detail: `Eine Geo-Allowlist ist aktiv. ${c} ist nicht in der Liste erlaubter Länder.`, fix: `Füge ${c} zur Geo-Allowlist hinzu falls diese Nutzer legitim sind.`, severity: 'yellow' }; }
+  return { title: 'Blockiert', detail: `Grund: ${reason}`, fix: 'Prüfe Konfiguration und Filter für diesen API Key.', severity: 'red' };
+}
+
+function LogDetailPanel({ log, onClose }: { log: any; onClose: () => void }) {
+  const exp = getBlockExplanation((log as any).block_reason || '', log);
+  const sevColor  = exp.severity === 'red' ? '#f87171' : exp.severity === 'yellow' ? '#fbbf24' : '#60a5fa';
+  const sevBg     = exp.severity === 'red' ? 'rgba(239,68,68,0.1)' : exp.severity === 'yellow' ? 'rgba(245,158,11,0.1)' : 'rgba(59,130,246,0.1)';
+  const sevBorder = exp.severity === 'red' ? 'rgba(239,68,68,0.25)' : exp.severity === 'yellow' ? 'rgba(245,158,11,0.25)' : 'rgba(59,130,246,0.25)';
+  return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 201, width: 420, maxWidth: '100vw', background: '#0c1525', borderLeft: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', boxShadow: '-16px 0 48px rgba(0,0,0,0.5)', animation: 'slideInRight 0.25s cubic-bezier(0.16,1,0.3,1)' }}>
+        <div style={{ padding: '1.125rem 1.375rem', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: log.blocked ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>{log.blocked ? '🚫' : '✅'}</div>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white' }}>{log.blocked ? 'Blockierter Request' : 'Erlaubter Request'}</div>
+              <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)' }}>{new Date(log.timestamp).toLocaleString('de-DE')}</div>
+            </div>
+          </div>
+          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: 6, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '1.125rem 1.375rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+          <div style={{ padding: '0.875rem', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>Request Details</div>
+            {[['IP', log.ip_address, true], ['Endpoint', log.endpoint, true], ['Method', log.method, true], ['Status', String(log.status_code), false], ['User Agent', (log.user_agent || '—').slice(0, 55) + (log.user_agent?.length > 55 ? '…' : ''), true]].map(([lbl, val, mono]: any) => (
+              <div key={lbl} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                <span style={{ minWidth: 70, fontSize: '0.63rem', color: 'rgba(255,255,255,0.28)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', paddingTop: 2 }}>{lbl}</span>
+                <code style={{ flex: 1, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', fontFamily: mono ? 'monospace' : 'inherit', wordBreak: 'break-all' }}>{val}</code>
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: '0.875rem', borderRadius: 10, background: sevBg, border: `1px solid ${sevBorder}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: sevColor, boxShadow: `0 0 6px ${sevColor}` }} />
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: sevColor }}>{exp.title}</span>
+            </div>
+            <p style={{ fontSize: '0.79rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>{exp.detail}</p>
+          </div>
+          <div style={{ padding: '0.875rem', borderRadius: 10, background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" strokeWidth="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <span style={{ fontSize: '0.73rem', fontWeight: 700, color: '#60a5fa' }}>Wie beheben?</span>
+            </div>
+            <p style={{ fontSize: '0.77rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, margin: 0 }}>{exp.fix}</p>
+          </div>
+          {(log as any).block_reason && (
+            <div style={{ padding: '0.5rem 0.75rem', borderRadius: 7, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <span style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.22)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>raw: </span>
+              <code style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>{(log as any).block_reason}</code>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 interface AnalyticsProps {
   apiKeyId: number;
   apiKeyName?: string;
@@ -61,6 +146,7 @@ export function Analytics({ apiKeyId, apiKeyName, isPro = false, onUpgrade }: An
   const [activeSection, setActiveSection] = useState<'overview' | 'logs' | 'anomaly' | 'retry'>('overview');
   const [exportLoading, setExportLoading] = useState(false);
   const [exportRange, setExportRange] = useState('7d');
+  const [selectedLog, setSelectedLog] = useState<any>(null);
 
   // Log filters
   const [logSearch, setLogSearch] = useState('');
@@ -437,14 +523,18 @@ export function Analytics({ apiKeyId, apiKeyName, isPro = false, onUpgrade }: An
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
               <thead>
                 <tr>
-                  {['Zeit', 'IP', 'Endpoint', 'Method', 'Status', 'Entscheidung'].map(h => (
+                  {['Zeit', 'IP', 'Endpoint', 'Method', 'Status', 'Entscheidung', 'Grund'].map(h => (
                     <th key={h} style={{ padding: '0.45rem 0.7rem', textAlign: 'left', fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.22)', textTransform: 'uppercase', letterSpacing: '0.07em', borderBottom: '1px solid rgba(255,255,255,0.05)', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {logs.slice(0, 100).map((log, idx) => (
-                  <tr key={idx} onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.016)'} onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'} style={{ transition: 'background 0.1s' }}>
+                  <tr key={idx}
+                    onClick={() => setSelectedLog(log)}
+                    style={{ cursor: 'pointer', transition: 'background 0.1s' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.025)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}>
                     <td style={{ padding: '0.5rem 0.7rem', color: 'rgba(255,255,255,0.37)', whiteSpace: 'nowrap', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.72rem' }}>
                       {new Date(log.timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                     </td>
@@ -468,10 +558,19 @@ export function Analytics({ apiKeyId, apiKeyName, isPro = false, onUpgrade }: An
                         {log.blocked ? 'Blockiert' : 'Erlaubt'}
                       </span>
                     </td>
+                    <td style={{ padding: '0.5rem 0.7rem', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      {(log as any).block_reason ? (
+                        <span title={(log as any).block_reason} style={{ display: 'inline-block', padding: '2px 7px', borderRadius: 5, fontSize: '0.62rem', fontWeight: 600, background: 'rgba(239,68,68,0.07)', color: 'rgba(248,113,113,0.8)', border: '1px solid rgba(239,68,68,0.14)', fontFamily: 'monospace', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+                          {formatBlockReason((log as any).block_reason)}
+                        </span>
+                      ) : (
+                        <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.65rem' }}>—</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
                 {logs.length === 0 && (
-                  <tr><td colSpan={6} style={{ padding: '2.5rem', textAlign: 'center', color: 'rgba(255,255,255,0.18)', fontSize: '0.84rem' }}>Keine Logs für diesen Filter</td></tr>
+                  <tr><td colSpan={7} style={{ padding: '2.5rem', textAlign: 'center', color: 'rgba(255,255,255,0.18)', fontSize: '0.84rem' }}>Keine Logs für diesen Filter</td></tr>
                 )}
               </tbody>
             </table>
@@ -589,10 +688,13 @@ export function Analytics({ apiKeyId, apiKeyName, isPro = false, onUpgrade }: An
         )
       )}
 
+      {selectedLog && <LogDetailPanel log={selectedLog} onClose={() => setSelectedLog(null)} />}
+
       <style>{`
         @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         @keyframes liveBlip { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,0.4)} 50%{opacity:.6;box-shadow:0 0 0 5px rgba(52,211,153,0)} }
         @keyframes critPulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5)} 50%{box-shadow:0 0 0 5px rgba(239,68,68,0)} }
+        @keyframes slideInRight { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
         select option { background: #0c1525; }
       `}</style>
     </div>

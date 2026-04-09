@@ -1,5 +1,18 @@
 import { Context } from 'hono';
 
+// ── HMAC-SHA256 Webhook Signierung ──────────────────────────────────────────────
+
+async function computeHmacSha256(secret: string, body: string): Promise<string> {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(body));
+  return 'sha256=' + Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // ── Send email via Resend ──────────────────────────────────────────────────────
 
 async function sendEmail(env: any, to: string, subject: string, html: string): Promise<boolean> {
@@ -230,11 +243,15 @@ export async function testWebhook(c: Context) {
           : { event: 'test', message: 'RateLimit API webhook test successful', timestamp: new Date().toISOString() };
 
       try {
-        const res = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
+        const bodyStr = JSON.stringify(payload);
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+        if (webhookType === 'custom' && c.env.WEBHOOK_HMAC_SECRET) {
+          headers['X-RateLimit-Signature'] = await computeHmacSha256(c.env.WEBHOOK_HMAC_SECRET, bodyStr);
+          headers['X-RateLimit-Timestamp'] = String(Math.floor(Date.now() / 1000));
+        }
+
+        const res = await fetch(webhookUrl, { method: 'POST', headers, body: bodyStr });
         results.webhook = { success: res.ok, status: res.status, message: res.ok ? 'Webhook erfolgreich!' : `HTTP ${res.status}` };
       } catch (e: any) {
         results.webhook = { success: false, message: `Webhook nicht erreichbar: ${e.message}` };
@@ -280,10 +297,22 @@ export async function triggerAlerts(env: any, apiKeyId: number, eventType: strin
             ? { embeds: [{ title: `🚨 RateLimit API — ${eventType}`, description: `${message}\n\n**Key:** ${keyName}`, color: 0xef4444 }] }
             : { event: eventType, message, apiKey: keyName, timestamp: new Date().toISOString() };
 
+        const bodyStr = JSON.stringify(payload);
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+        // HMAC signature for custom webhooks
+        if (alert.webhook_type === 'custom' && (env.WEBHOOK_HMAC_SECRET || alert.webhook_secret)) {
+          const secret = alert.webhook_secret || env.WEBHOOK_HMAC_SECRET;
+          try {
+            headers['X-RateLimit-Signature'] = await computeHmacSha256(secret, bodyStr);
+            headers['X-RateLimit-Timestamp'] = String(Math.floor(Date.now() / 1000));
+          } catch {}
+        }
+
         fetch(alert.webhook_url, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          headers,
+          body: bodyStr,
         }).catch(() => {});
       }
 

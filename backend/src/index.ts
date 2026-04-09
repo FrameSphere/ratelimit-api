@@ -15,6 +15,10 @@ import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimi
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit, getRateLimitStatus } from './ratelimit/checker';
 import { getAdaptiveSuggestions, applyAdaptiveSuggestion } from './ratelimit/adaptive';
+import {
+  getAutoBlockSettings, upsertAutoBlockSettings,
+  getBlockedIPs, unblockIP, clearExpiredBlocks, manualBlockIP,
+} from './ratelimit/autoblock';
 import { getAnalytics, getRecentLogs, exportLogsCsv, getCurrentUsage, getAllKeysUsage } from './analytics/handlers';
 import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
@@ -95,6 +99,14 @@ app.get('/api/logs/:apiKeyId', getRecentLogs);
 // Adaptive Rate Limiting (Pro)
 app.get('/api/adaptive/:apiKeyId', getAdaptiveSuggestions);
 app.post('/api/adaptive/apply', applyAdaptiveSuggestion);
+
+// Auto IP Blocking (Pro)
+app.get('/api/autoblock/:apiKeyId/settings', getAutoBlockSettings);
+app.put('/api/autoblock/:apiKeyId/settings', upsertAutoBlockSettings);
+app.get('/api/autoblock/:apiKeyId/blocked', getBlockedIPs);
+app.delete('/api/autoblock/:apiKeyId/blocked/:ip', unblockIP);
+app.delete('/api/autoblock/:apiKeyId/expired', clearExpiredBlocks);
+app.post('/api/autoblock/:apiKeyId/block', manualBlockIP);
 
 // Alerts (Pro)
 app.get('/api/alerts/:apiKeyId', getAlerts);

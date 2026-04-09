@@ -8,12 +8,14 @@ import { AlertsTab } from './AlertsTab';
 import { SandboxTab } from './SandboxTab';
 import { SupportTab } from './SupportTab';
 import { NearLimitPanel } from './NearLimitPanel';
+import { AdaptiveTab } from './AdaptiveTab';
+import { AutoBlockTab } from './AutoBlockTab';
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
-type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'nearlimit' | 'billing' | 'support';
+type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'nearlimit' | 'adaptive' | 'autoblock' | 'billing' | 'support';
 
 const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boolean }[] = [
   {
@@ -72,6 +74,29 @@ const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boo
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'adaptive',
+    label: 'Adaptive RL',
+    proTag: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'autoblock',
+    label: 'Auto Block',
+    proTag: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
       </svg>
     ),
   },
@@ -163,18 +188,22 @@ export function Dashboard({ onLogout }: DashboardProps) {
     ? user.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : '?';
 
+  // ── CHANGE 1: adaptive entry added to PAGE_META ──
   const PAGE_META: Record<TabId, { title: string; desc: string }> = {
-    keys:      { title: 'API Keys',            desc: 'Verwalte, konfiguriere und pausiere deine Keys.' },
-    configs:   { title: 'Konfiguration',       desc: selectedApiKeyName ? `Rate Limits & Filter für „${selectedApiKeyName}"` : 'Wähle einen API Key um loszulegen.' },
-    analytics: { title: 'Analytics',           desc: selectedApiKeyName ? `Traffic & Blockierungen für „${selectedApiKeyName}"` : 'Wähle einen API Key um Daten zu sehen.' },
-    alerts:    { title: 'Alerts & Webhooks',   desc: selectedApiKeyName ? `Benachrichtigungen für „${selectedApiKeyName}"` : 'Wähle einen Key und richte Webhook-Alerts ein.' },
-    sandbox:   { title: 'Test-Modus / Sandbox', desc: 'Simuliere Requests gegen deine Rate Limit Konfiguration.' },
-    nearlimit: { title: 'Near-Limit Übersicht', desc: 'Alle Keys auf einen Blick — wer ist wie nah am Limit?' },
-    billing:   { title: 'Billing',             desc: 'Dein Abo, Plan-Details und Rechnungen.' },
-    support:   { title: 'Support',             desc: 'Tickets und Team-Kommunikation.' },
+    keys:      { title: 'API Keys',              desc: 'Verwalte, konfiguriere und pausiere deine Keys.' },
+    configs:   { title: 'Konfiguration',         desc: selectedApiKeyName ? `Rate Limits & Filter für „${selectedApiKeyName}"` : 'Wähle einen API Key um loszulegen.' },
+    analytics: { title: 'Analytics',             desc: selectedApiKeyName ? `Traffic & Blockierungen für „${selectedApiKeyName}"` : 'Wähle einen API Key um Daten zu sehen.' },
+    alerts:    { title: 'Alerts & Webhooks',     desc: selectedApiKeyName ? `Benachrichtigungen für „${selectedApiKeyName}"` : 'Wähle einen Key und richte Webhook-Alerts ein.' },
+    sandbox:   { title: 'Test-Modus / Sandbox',  desc: 'Simuliere Requests gegen deine Rate Limit Konfiguration.' },
+    nearlimit: { title: 'Near-Limit Übersicht',  desc: 'Alle Keys auf einen Blick — wer ist wie nah am Limit?' },
+    adaptive:  { title: 'Adaptive Rate Limits',  desc: selectedApiKeyName ? `KI-Vorschläge für „${selectedApiKeyName}“` : 'Wähle einen Key für Optimierungsvorschläge.' },
+    autoblock: { title: 'Auto IP Blocking',      desc: selectedApiKeyName ? `Automatische Sperren für „${selectedApiKeyName}“` : 'Wähle einen Key um Auto-Block zu konfigurieren.' },
+    billing:   { title: 'Billing',               desc: 'Dein Abo, Plan-Details und Rechnungen.' },
+    support:   { title: 'Support',               desc: 'Tickets und Team-Kommunikation.' },
   };
 
-  const showKeySwitcher = activeTab === 'configs' || activeTab === 'analytics' || activeTab === 'alerts';
+  // ── CHANGE 3: showKeySwitcher includes adaptive ──
+  const showKeySwitcher = activeTab === 'configs' || activeTab === 'analytics' || activeTab === 'alerts' || activeTab === 'adaptive' || activeTab === 'autoblock';
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#080d1a', fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -240,8 +269,9 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', margin: '0.4rem 0.5rem' }} />
 
+          {/* ── CHANGE 2: 'adaptive' added to Pro Features filter ── */}
           <SideNavSection label="Pro Features">
-            {NAV_ITEMS.filter(i => ['alerts','sandbox','nearlimit'].includes(i.id)).map(item => (
+            {NAV_ITEMS.filter(i => ['alerts','sandbox','nearlimit','adaptive','autoblock'].includes(i.id)).map(item => (
               <SideNavItem
                 key={item.id}
                 icon={item.icon}
@@ -441,6 +471,25 @@ export function Dashboard({ onLogout }: DashboardProps) {
               isPro={isPro}
               onUpgrade={() => window.location.href = '/pricing'}
               onSelectKey={(id, tab) => { setSelectedApiKey(id); setActiveTab(tab); }}
+            />
+          )}
+
+          {/* ── CHANGE 4: Adaptive RL tab render ── */}
+          {activeTab === 'adaptive' && (
+            <AdaptiveTab
+              apiKeyId={selectedApiKey}
+              apiKeyName={selectedApiKeyName}
+              isPro={isPro}
+              onUpgrade={() => window.location.href = '/pricing'}
+            />
+          )}
+
+          {activeTab === 'autoblock' && (
+            <AutoBlockTab
+              apiKeyId={selectedApiKey}
+              apiKeyName={selectedApiKeyName}
+              isPro={isPro}
+              onUpgrade={() => window.location.href = '/pricing'}
             />
           )}
 
@@ -678,7 +727,7 @@ function BillingTab({ user, userPlan, onPlanRefresh }: { user: any; userPlan: Pl
               { icon: '🔔', label: 'Webhook-Alerts', desc: 'Slack, Discord, Custom' },
               { icon: '🧪', label: 'Test-Sandbox', desc: 'Limits ohne Risiko testen' },
               { icon: '📄', label: 'CSV Log-Export', desc: 'Für Compliance & Analyse' },
-              { icon: '♾️', label: 'Unbegrenzte Filter', desc: 'IP, User-Agent & mehr' },
+              { icon: '🧠', label: 'Adaptive RL', desc: 'KI optimiert deine Limits' },
             ].map(f => (
               <div key={f.label} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', padding: '0.625rem 0.75rem', background: 'rgba(139,92,246,0.05)', border: '1px solid rgba(139,92,246,0.1)', borderRadius: 8 }}>
                 <span style={{ fontSize: '0.95rem', flexShrink: 0 }}>{f.icon}</span>

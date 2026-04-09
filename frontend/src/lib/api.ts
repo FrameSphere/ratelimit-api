@@ -45,6 +45,7 @@ export interface RequestLog {
   method: string;
   status_code: number;
   blocked: number;
+  block_reason?: string | null;
   timestamp: string;
 }
 
@@ -305,6 +306,43 @@ class ApiClient {
     return this.request<{ success: boolean; message: string }>('/api/alerts/test', {
       method: 'POST',
       body: JSON.stringify({ webhookUrl, webhookType }),
+    });
+  }
+
+  // ── Auto IP Blocking (Pro) ───────────────────────────────────────────────────
+
+  async getAutoBlockSettings(apiKeyId: number) {
+    return this.request<{ settings: any; migrationRequired?: boolean }>(`/api/autoblock/${apiKeyId}/settings`);
+  }
+
+  async saveAutoBlockSettings(apiKeyId: number, settings: {
+    enabled: boolean;
+    violations_threshold: number;
+    violations_window_minutes: number;
+    block_duration_minutes: number;
+  }) {
+    return this.request<{ message: string }>(`/api/autoblock/${apiKeyId}/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    });
+  }
+
+  async getBlockedIPs(apiKeyId: number) {
+    return this.request<{ blocked: any[]; violations: any[] }>(`/api/autoblock/${apiKeyId}/blocked`);
+  }
+
+  async unblockIP(apiKeyId: number, ip: string) {
+    return this.request<{ message: string }>(`/api/autoblock/${apiKeyId}/blocked/${encodeURIComponent(ip)}`, { method: 'DELETE' });
+  }
+
+  async clearExpiredBlocks(apiKeyId: number) {
+    return this.request<{ message: string; cleared: number }>(`/api/autoblock/${apiKeyId}/expired`, { method: 'DELETE' });
+  }
+
+  async manualBlockIP(apiKeyId: number, ip: string, durationMinutes: number) {
+    return this.request<{ message: string }>(`/api/autoblock/${apiKeyId}/block`, {
+      method: 'POST',
+      body: JSON.stringify({ ip, durationMinutes }),
     });
   }
 }
