@@ -20,6 +20,7 @@ import {
   getBlockedIPs, unblockIP, clearExpiredBlocks, manualBlockIP,
 } from './ratelimit/autoblock';
 import { getAnalytics, getRecentLogs, exportLogsCsv, getCurrentUsage, getAllKeysUsage } from './analytics/handlers';
+import { streamLogs } from './analytics/stream';
 import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
   createCheckoutSession,
@@ -87,10 +88,13 @@ app.post('/api/filters', createFilter);
 app.get('/api/filters/:configId', getFilters);
 app.delete('/api/filters/:id', deleteFilter);
 
-// Analytics — IMPORTANT: static routes BEFORE parameterized ones!
-app.get('/api/analytics/all/usage', getAllKeysUsage);        // ← must be before /:apiKeyId
+// Analytics
+app.get('/api/analytics/all/usage', getAllKeysUsage);
 app.get('/api/analytics/:apiKeyId/usage', getCurrentUsage);
 app.get('/api/analytics/:apiKeyId', getAnalytics);
+
+// SSE Live Stream (Pro)
+app.get('/api/stream/:apiKeyId', streamLogs);
 
 // Logs
 app.get('/api/logs/:apiKeyId/export', exportLogsCsv);

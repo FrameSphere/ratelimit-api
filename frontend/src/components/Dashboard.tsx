@@ -10,12 +10,13 @@ import { SupportTab } from './SupportTab';
 import { NearLimitPanel } from './NearLimitPanel';
 import { AdaptiveTab } from './AdaptiveTab';
 import { AutoBlockTab } from './AutoBlockTab';
+import { LiveStreamTab } from './LiveStreamTab';
 
 interface DashboardProps {
   onLogout: () => void;
 }
 
-type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'nearlimit' | 'adaptive' | 'autoblock' | 'billing' | 'support';
+type TabId = 'keys' | 'configs' | 'analytics' | 'alerts' | 'sandbox' | 'nearlimit' | 'adaptive' | 'autoblock' | 'stream' | 'billing' | 'support';
 
 const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boolean }[] = [
   {
@@ -97,6 +98,19 @@ const NAV_ITEMS: { id: TabId; label: string; icon: React.ReactNode; proTag?: boo
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="10"/>
         <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+      </svg>
+    ),
+  },
+  {
+    id: 'stream',
+    label: 'Live Stream',
+    proTag: true,
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+        <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+        <line x1="12" y1="20" x2="12.01" y2="20"/>
       </svg>
     ),
   },
@@ -198,12 +212,13 @@ export function Dashboard({ onLogout }: DashboardProps) {
     nearlimit: { title: 'Near-Limit Übersicht',  desc: 'Alle Keys auf einen Blick — wer ist wie nah am Limit?' },
     adaptive:  { title: 'Adaptive Rate Limits',  desc: selectedApiKeyName ? `KI-Vorschläge für „${selectedApiKeyName}“` : 'Wähle einen Key für Optimierungsvorschläge.' },
     autoblock: { title: 'Auto IP Blocking',      desc: selectedApiKeyName ? `Automatische Sperren für „${selectedApiKeyName}“` : 'Wähle einen Key um Auto-Block zu konfigurieren.' },
+    stream:    { title: 'Live Stream',             desc: selectedApiKeyName ? `Echtzeit-Feed für „${selectedApiKeyName}“` : 'Wähle einen Key für den Live Stream.' },
     billing:   { title: 'Billing',               desc: 'Dein Abo, Plan-Details und Rechnungen.' },
     support:   { title: 'Support',               desc: 'Tickets und Team-Kommunikation.' },
   };
 
   // ── CHANGE 3: showKeySwitcher includes adaptive ──
-  const showKeySwitcher = activeTab === 'configs' || activeTab === 'analytics' || activeTab === 'alerts' || activeTab === 'adaptive' || activeTab === 'autoblock';
+  const showKeySwitcher = activeTab === 'configs' || activeTab === 'analytics' || activeTab === 'alerts' || activeTab === 'adaptive' || activeTab === 'autoblock' || activeTab === 'stream';
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#080d1a', fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -271,7 +286,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           {/* ── CHANGE 2: 'adaptive' added to Pro Features filter ── */}
           <SideNavSection label="Pro Features">
-            {NAV_ITEMS.filter(i => ['alerts','sandbox','nearlimit','adaptive','autoblock'].includes(i.id)).map(item => (
+            {NAV_ITEMS.filter(i => ['alerts','sandbox','nearlimit','adaptive','autoblock','stream'].includes(i.id)).map(item => (
               <SideNavItem
                 key={item.id}
                 icon={item.icon}
@@ -486,6 +501,15 @@ export function Dashboard({ onLogout }: DashboardProps) {
 
           {activeTab === 'autoblock' && (
             <AutoBlockTab
+              apiKeyId={selectedApiKey}
+              apiKeyName={selectedApiKeyName}
+              isPro={isPro}
+              onUpgrade={() => window.location.href = '/pricing'}
+            />
+          )}
+
+          {activeTab === 'stream' && (
+            <LiveStreamTab
               apiKeyId={selectedApiKey}
               apiKeyName={selectedApiKeyName}
               isPro={isPro}

@@ -76,6 +76,8 @@ export function AdaptiveTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: Adaptive
   const [applying, setApplying] = useState<number | null>(null);
   const [applyMsg, setApplyMsg] = useState<{ configId: number; ok: boolean; text: string } | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [autoApply, setAutoApply] = useState(() => localStorage.getItem(`adaptive_auto_${apiKeyId}`) === '1');
+  const [autoApplyLog, setAutoApplyLog] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     if (!apiKeyId || !isPro) return;
@@ -87,6 +89,33 @@ export function AdaptiveTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: Adaptive
   }, [apiKeyId, isPro]);
 
   useEffect(() => { load(); }, [load]);
+
+  // ── Auto-Apply: alle 30 Min neu analysieren und anwenden ──────────────────
+  useEffect(() => {
+    if (!autoApply || !apiKeyId || !isPro) return;
+    localStorage.setItem(`adaptive_auto_${apiKeyId}`, '1');
+    const interval = setInterval(async () => {
+      const { data } = await api.getAdaptiveSuggestions(apiKeyId);
+      if (!data?.suggestions) return;
+      for (const s of data.suggestions) {
+        if (s.canApply && s.suggestedMax !== null) {
+          const { data: applyData } = await api.applyAdaptiveSuggestion(s.configId);
+          if (applyData?.newLimit) {
+            const msg = `[${new Date().toLocaleTimeString('de-DE')}] „${s.configName}“: ${s.currentLimit} → ${applyData.newLimit} Req`;
+            setAutoApplyLog(prev => [msg, ...prev].slice(0, 10));
+          }
+        }
+      }
+      load();
+    }, 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [autoApply, apiKeyId, isPro, load]);
+
+  const toggleAutoApply = (val: boolean) => {
+    setAutoApply(val);
+    if (!val) localStorage.removeItem(`adaptive_auto_${apiKeyId}`);
+    else localStorage.setItem(`adaptive_auto_${apiKeyId}`, '1');
+  };
 
   const apply = async (configId: number) => {
     setApplying(configId); setApplyMsg(null);
@@ -168,6 +197,20 @@ export function AdaptiveTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: Adaptive
           </svg>
           {loading ? 'Analysiere…' : 'Neu analysieren'}
         </button>
+
+        {/* Auto-Apply Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.45rem 0.875rem', borderRadius: 8, background: autoApply ? 'rgba(16,185,129,0.07)' : 'rgba(255,255,255,0.03)', border: `1px solid ${autoApply ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.09)'}`, transition: 'all 0.2s' }}>
+          <button
+            onClick={() => toggleAutoApply(!autoApply)}
+            style={{ width: 36, height: 20, borderRadius: 10, background: autoApply ? 'rgba(16,185,129,0.35)' : 'rgba(255,255,255,0.1)', border: `1px solid ${autoApply ? 'rgba(16,185,129,0.55)' : 'rgba(255,255,255,0.15)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0 3px', transition: 'all 0.2s', flexShrink: 0 }}
+          >
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: autoApply ? '#34d399' : 'rgba(255,255,255,0.35)', transform: autoApply ? 'translateX(16px)' : 'translateX(0)', transition: 'all 0.2s' }} />
+          </button>
+          <div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 700, color: autoApply ? '#34d399' : 'rgba(255,255,255,0.45)' }}>Auto-Optimize</div>
+            <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)' }}>{autoApply ? 'Aktiv — alle 30 Min' : 'Manuell'}</div>
+          </div>
+        </div>
       </div>
 
       {/* Error */}
@@ -350,6 +393,16 @@ export function AdaptiveTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: Adaptive
             „Anwenden" überschreibt das aktuelle Limit sofort — du kannst es jederzeit im <strong style={{ color: 'rgba(255,255,255,0.5)' }}>Konfiguration</strong> Tab manuell anpassen.
             Die KI berücksichtigt Peak-Traffic, Durchschnitt und Blockierrate.
           </div>
+        </div>
+      )}
+
+      {/* Auto-Apply Activity Log */}
+      {autoApply && autoApplyLog.length > 0 && (
+        <div style={{ marginTop: '0.875rem', padding: '0.875rem 1rem', borderRadius: 10, background: 'rgba(16,185,129,0.05)', border: '1px solid rgba(16,185,129,0.15)' }}>
+          <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.5rem' }}>⚡ Auto-Apply Protokoll</div>
+          {autoApplyLog.map((entry, i) => (
+            <div key={i} style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace', padding: '2px 0' }}>{entry}</div>
+          ))}
         </div>
       )}
 

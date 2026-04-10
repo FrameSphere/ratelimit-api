@@ -177,29 +177,6 @@ export function AutoBlockTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: AutoBlo
     );
   }
 
-  // ── Migration required ────────────────────────────────────────────────────
-
-  if (migrationRequired) {
-    return (
-      <div style={{ maxWidth: 600 }}>
-        <div style={{ padding: '1.25rem 1.375rem', borderRadius: 14, background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.2)' }}>
-          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fbbf24', marginBottom: '0.5rem' }}>⚠️ DB-Migration erforderlich</div>
-          <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: '0.875rem' }}>
-            Die Auto-Block Tabellen fehlen in der Produktionsdatenbank. Führe diese Befehle im Terminal aus:
-          </p>
-          <pre style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '0.875rem', fontSize: '0.72rem', color: '#93c5fd', fontFamily: 'monospace', overflowX: 'auto', lineHeight: 1.7 }}>{`npx wrangler d1 execute ratelimit-db --remote --command "CREATE TABLE IF NOT EXISTS ip_violations (id INTEGER PRIMARY KEY AUTOINCREMENT, api_key_id INTEGER NOT NULL, ip_address TEXT NOT NULL, violation_count INTEGER DEFAULT 1, last_violation DATETIME DEFAULT CURRENT_TIMESTAMP, auto_blocked_until DATETIME DEFAULT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, UNIQUE(api_key_id, ip_address), FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE)"
-
-npx wrangler d1 execute ratelimit-db --remote --command "CREATE TABLE IF NOT EXISTS auto_block_settings (id INTEGER PRIMARY KEY AUTOINCREMENT, api_key_id INTEGER NOT NULL UNIQUE, enabled INTEGER DEFAULT 0, violations_threshold INTEGER DEFAULT 10, violations_window_minutes INTEGER DEFAULT 5, block_duration_minutes INTEGER DEFAULT 30, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE)"
-
-npx wrangler d1 execute ratelimit-db --remote --command "CREATE INDEX IF NOT EXISTS idx_ip_violations_key_ip ON ip_violations(api_key_id, ip_address)"`}</pre>
-          <button onClick={load} style={{ marginTop: '0.75rem', padding: '0.45rem 1rem', borderRadius: 7, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.1)', color: '#fbbf24', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}>
-            Erneut prüfen
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ maxWidth: 860 }}>
 

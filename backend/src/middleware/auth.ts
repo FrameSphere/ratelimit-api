@@ -3,7 +3,9 @@ import { verifyToken, extractToken } from '../auth/jwt';
 
 export async function authMiddleware(c: Context, next: Next) {
   const authHeader = c.req.header('Authorization');
-  const token = extractToken(authHeader);
+  // SSE clients can't set headers — allow token via query param as fallback
+  const queryToken = c.req.query('token');
+  const token = extractToken(authHeader) || queryToken || null;
 
   if (!token) {
     return c.json({ error: 'Unauthorized - No token provided' }, 401);
