@@ -21,6 +21,7 @@ import { UseCasesGuide } from './components/blog/UseCasesGuide';
 import { ImpressumPage } from './components/ImpressumPage';
 import { DatenschutzPage } from './components/DatenschutzPage';
 import { NutzungsbedingungenPage } from './components/NutzungsbedingungenPage';
+import { IntegrationsPage } from './components/IntegrationsPage';
 import { api } from './lib/api';
 
 export default function App() {
