@@ -21,6 +21,7 @@ import {
 } from './ratelimit/autoblock';
 import { getAnalytics, getRecentLogs, exportLogsCsv, getCurrentUsage, getAllKeysUsage } from './analytics/handlers';
 import { streamLogs } from './analytics/stream';
+import { getReportSchedule, upsertReportSchedule, sendTestReport, runScheduledReports } from './analytics/reports';
 import { getAlerts, createAlert, updateAlert, deleteAlert, testWebhook } from './alerts/handlers';
 import {
   createCheckoutSession,
@@ -96,6 +97,11 @@ app.get('/api/analytics/:apiKeyId', getAnalytics);
 // SSE Live Stream (Pro)
 app.get('/api/stream/:apiKeyId', streamLogs);
 
+// Scheduled Reports (Pro)
+app.get('/api/reports/:apiKeyId/schedule', getReportSchedule);
+app.put('/api/reports/:apiKeyId/schedule', upsertReportSchedule);
+app.post('/api/reports/:apiKeyId/test', sendTestReport);
+
 // Logs
 app.get('/api/logs/:apiKeyId/export', exportLogsCsv);
 app.get('/api/logs/:apiKeyId', getRecentLogs);
@@ -138,5 +144,10 @@ export default {
         headers: { 'Content-Type': 'application/json' },
       });
     }
+  },
+
+  // ── Cron Trigger ────────────────────────────────────────────────────────────────────
+  async scheduled(event: ScheduledEvent, env: any, ctx: ExecutionContext) {
+    ctx.waitUntil(runScheduledReports(env, event.cron));
   },
 };

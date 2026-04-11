@@ -2,6 +2,10 @@ name = "ratelimit-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
+[triggers]
+crons = ["0 8 * * *", "0 8 * * 1", "0 8 1 * *"]
+# Daily: 08:00 UTC, Weekly: Monday 08:00 UTC, Monthly: 1st 08:00 UTC
+
 [[ d1_databases ]]
 binding = "DB"
 database_name = "ratelimit-db"
@@ -15,27 +19,29 @@ JWT_SECRET = "your-secret-key-change-this"
 HQ_API_URL = "https://webcontrol-hq-api.karol-paschek.workers.dev"
 HQ_SITE_ID = "ratelimit"
 
-# OAuth Configuration
+# OAuth Redirect (frontend URL – where browser lands after provider consent)
 OAUTH_REDIRECT_URI = "https://ratelimit-api.pages.dev/auth/callback"
 
 # Google OAuth
+# GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET – set via wrangler secret
 
 # GitHub OAuth
 GITHUB_CLIENT_ID = "Ov23lijYavVjCd1hfkLS"
-GITHUB_CLIENT_SECRET = "d73e4aa59561f87d7e793b39087da7aa2ff7db43"
+# GITHUB_CLIENT_SECRET – set via wrangler secret
 
-# FrameSphere OAuth
-FRAMESPHERE_CLIENT_ID = "your-framesphere-client-id"
-FRAMESPHERE_CLIENT_SECRET = "your-framesphere-client-secret"
-FRAMESPHERE_AUTH_URL = "https://auth.framesphere.com/oauth/authorize"
-FRAMESPHERE_TOKEN_URL = "https://auth.framesphere.com/oauth/token"
-FRAMESPHERE_USERINFO_URL = "https://auth.framesphere.com/oauth/userinfo"
+# ─── FrameSphere SSO ──────────────────────────────────────────────────────────
+# Frontend URL of FrameSphere (consent screen lives here)
+FRAMESPHERE_URL = "https://frame-sphere.vercel.app"
+# Backend API URL of FrameSphere (token exchange endpoint)
+FRAMESPHERE_API_URL = "https://framesphere-backend.vercel.app/api"
+# Client ID registered in FrameSphere SSO
+FRAMESPHERE_CLIENT_ID = "ratelimit-api"
+# FRAMESPHERE_CLIENT_SECRET – set via wrangler secret:
+#   npx wrangler secret put FRAMESPHERE_CLIENT_SECRET
 
 # ─── Stripe ───────────────────────────────────────────────────────────────────
-# Stripe Public Price ID for Pro plan (safe to commit)
 STRIPE_PRO_PRICE_ID = "price_1TICQsEC9c8leIGWPp89vZi6"
-
-# Stripe secrets – set via wrangler secrets (DO NOT commit real values):
+# Stripe secrets – set via wrangler secrets:
 #   npx wrangler secret put STRIPE_SECRET_KEY
 #   npx wrangler secret put STRIPE_WEBHOOK_SECRET
 #   npx wrangler secret put HQ_AUTH_TOKEN
