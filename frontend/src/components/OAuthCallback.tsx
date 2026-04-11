@@ -27,16 +27,10 @@ export function OAuthCallback() {
       }
 
       try {
-        // Call backend callback endpoint
         const baseUrl = import.meta.env.VITE_API_URL || 'https://ratelimit-api.karol-paschek.workers.dev';
         const response = await fetch(
           `${baseUrl}/auth/oauth/${provider}/callback?code=${code}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
+          { method: 'GET', headers: { 'Content-Type': 'application/json' } }
         );
 
         const data = await response.json();
@@ -48,8 +42,14 @@ export function OAuthCallback() {
         if (data.token) {
           api.setToken(data.token);
           setStatus('success');
-          
+
           setTimeout(() => {
+            // FrameSphere SSO → always show the connect animation page
+            if (provider === 'framesphere') {
+              window.location.href = '/sso-welcome';
+              return;
+            }
+            // Other providers
             if (data.isNewUser) {
               localStorage.setItem('onboarding_pending', '1');
               if (data.user?.name) localStorage.setItem('welcome_name', data.user.name);
@@ -57,7 +57,7 @@ export function OAuthCallback() {
             } else {
               window.location.href = '/dashboard';
             }
-          }, 1000);
+          }, 600);
         } else {
           throw new Error('Kein Token erhalten');
         }
@@ -71,41 +71,44 @@ export function OAuthCallback() {
   }, [searchParams, navigate]);
 
   return (
-    <div style={{ maxWidth: '400px', margin: '100px auto' }}>
-      <div className="card" style={{ textAlign: 'center' }}>
+    <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', padding: '2rem' }}>
         {status === 'loading' && (
           <>
-            <div className="loading" style={{ marginBottom: '1rem' }}>
-              Lädt...
-            </div>
-            <h2>OAuth Anmeldung...</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              Bitte warten, Sie werden angemeldet.
-            </p>
+            <div style={{
+              width: 48, height: 48,
+              border: '3px solid rgba(168,85,247,0.2)',
+              borderTopColor: '#a855f7',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+              margin: '0 auto 1.5rem',
+            }} />
+            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+            <h2 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '0.5rem' }}>Wird angemeldet…</h2>
+            <p style={{ color: '#475569', fontSize: '0.9rem' }}>Bitte einen Moment warten.</p>
           </>
         )}
 
         {status === 'success' && (
           <>
-            <div style={{ fontSize: '48px', marginBottom: '1rem' }}>✅</div>
-            <h2>Erfolgreich angemeldet!</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>
-              Sie werden weitergeleitet...
-            </p>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+            <h2 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '0.5rem' }}>Erfolgreich!</h2>
+            <p style={{ color: '#475569', fontSize: '0.9rem' }}>Du wirst weitergeleitet…</p>
           </>
         )}
 
         {status === 'error' && (
           <>
-            <div style={{ fontSize: '48px', marginBottom: '1rem' }}>❌</div>
-            <h2>Anmeldung fehlgeschlagen</h2>
-            <div className="alert alert-error" style={{ marginTop: '1rem' }}>
-              {error}
-            </div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
+            <h2 style={{ color: '#f1f5f9', fontWeight: 700, marginBottom: '0.5rem' }}>Anmeldung fehlgeschlagen</h2>
+            <p style={{ color: '#ef4444', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{error}</p>
             <button
               onClick={() => navigate('/login')}
-              className="btn btn-primary"
-              style={{ marginTop: '1rem' }}
+              style={{
+                padding: '0.625rem 1.5rem', borderRadius: 10, border: 'none',
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem',
+              }}
             >
               Zurück zur Anmeldung
             </button>

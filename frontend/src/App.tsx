@@ -4,6 +4,7 @@ import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { Dashboard } from './components/Dashboard';
 import { OAuthCallback } from './components/OAuthCallback';
+import { SSOWelcome } from './components/SSOWelcome';
 import { HomePage } from './components/HomePage';
 import { ChangelogPage } from './components/ChangelogPage';
 import { FaqPage } from './components/FaqPage';
@@ -60,8 +61,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* OAuth */}
+        {/* OAuth callback – handles all providers including framesphere */}
         <Route path="/auth/callback" element={<OAuthCallback />} />
+
+        {/* FrameSphere SSO welcome animation */}
+        <Route path="/sso-welcome" element={<SSOWelcome />} />
 
         {/* Public */}
         <Route path="/"              element={<HomePage />} />
@@ -71,7 +75,7 @@ export default function App() {
         <Route path="/vergleich"     element={<VergleichPage />} />
         <Route path="/docs"          element={<DocsPage />} />
 
-        {/* Stripe success page – accessible when logged in or logged out */}
+        {/* Stripe success page */}
         <Route path="/payment/success" element={<PaymentSuccess />} />
 
         {/* Welcome onboarding – shown once after registration */}
@@ -82,7 +86,7 @@ export default function App() {
         } />
 
         {/* Tutorial pages */}
-        <Route path="/tutorial" element={<TutorialPage />} />
+        <Route path="/tutorial"          element={<TutorialPage />} />
         <Route path="/tutorial/advanced" element={<TutorialAdvancedPage />} />
 
         {/* Blog */}
@@ -107,11 +111,10 @@ export default function App() {
           element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" replace />}
         />
 
-        <Route path="/impressum"   element={<ImpressumPage />} />
-        <Route path="/datenschutz" element={<DatenschutzPage />} />
+        <Route path="/impressum"           element={<ImpressumPage />} />
+        <Route path="/datenschutz"         element={<DatenschutzPage />} />
         <Route path="/nutzungsbedingungen" element={<NutzungsbedingungenPage />} />
 
-        {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

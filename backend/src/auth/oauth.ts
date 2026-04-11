@@ -13,7 +13,6 @@ interface OAuthUser {
 export async function googleOAuthInit(c: Context) {
   const clientId = c.env.GOOGLE_CLIENT_ID;
   const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api.pages.dev/auth/callback';
-
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: `${redirectUri}?provider=google`,
@@ -57,7 +56,6 @@ export async function googleOAuthCallback(c: Context) {
 export async function githubOAuthInit(c: Context) {
   const clientId = c.env.GITHUB_CLIENT_ID;
   const redirectUri = c.env.OAUTH_REDIRECT_URI || 'https://ratelimit-api.pages.dev/auth/callback';
-
   const params = new URLSearchParams({
     client_id: clientId,
     redirect_uri: `${redirectUri}?provider=github`,
@@ -106,7 +104,6 @@ export async function framesphereOAuthInit(c: Context) {
     client_id:    clientId,
     redirect_uri: `${redirectUri}?provider=framesphere`,
   });
-
   return c.redirect(`${framesphereUrl}/sso/authorize?${params.toString()}`);
 }
 
@@ -117,7 +114,7 @@ export async function framesphereOAuthCallback(c: Context) {
   if (error || !code) return c.json({ error: 'FrameSphere SSO abgebrochen' }, 400);
 
   const framesphereApiUrl = c.env.FRAMESPHERE_API_URL || 'https://framesphere-backend.vercel.app/api';
-  const clientId          = c.env.FRAMESPHERE_CLIENT_ID  || 'ratelimit-api';
+  const clientId          = c.env.FRAMESPHERE_CLIENT_ID || 'ratelimit-api';
   const clientSecret      = c.env.FRAMESPHERE_CLIENT_SECRET;
 
   if (!clientSecret) {
@@ -126,7 +123,6 @@ export async function framesphereOAuthCallback(c: Context) {
   }
 
   try {
-    // Exchange code for FrameSphere user data
     const tokenRes = await fetch(`${framesphereApiUrl}/sso/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -140,10 +136,7 @@ export async function framesphereOAuthCallback(c: Context) {
     }
 
     const { user: fsUser }: any = await tokenRes.json();
-
-    if (!fsUser?.email) {
-      return c.json({ error: 'Keine E-Mail von FrameSphere erhalten' }, 400);
-    }
+    if (!fsUser?.email) return c.json({ error: 'Keine E-Mail von FrameSphere erhalten' }, 400);
 
     return handleOAuthLogin(c, {
       email:             fsUser.email,
@@ -161,16 +154,20 @@ export async function framesphereOAuthCallback(c: Context) {
 // ===== COMMON HANDLER =====
 async function handleOAuthLogin(c: Context, oauthUser: OAuthUser) {
   try {
-    // Try to find by framesphereUserId first (if applicable)
     let user: any = null;
 
+    // 1. Try lookup by framesphere_user_id (safe – column may not exist yet)
     if (oauthUser.framesphereUserId) {
-      user = await c.env.DB.prepare(
-        'SELECT id, email, name FROM users WHERE framesphere_user_id = ?'
-      ).bind(oauthUser.framesphereUserId).first();
+      try {
+        user = await c.env.DB.prepare(
+          'SELECT id, email, name FROM users WHERE framesphere_user_id = ?'
+        ).bind(oauthUser.framesphereUserId).first();
+      } catch {
+        // Column might not exist yet – fall through to email lookup
+      }
     }
 
-    // Fall back to email lookup
+    // 2. Fallback: email lookup
     if (!user) {
       user = await c.env.DB.prepare(
         'SELECT id, email, name FROM users WHERE email = ?'
@@ -178,34 +175,45 @@ async function handleOAuthLogin(c: Context, oauthUser: OAuthUser) {
     }
 
     if (!user) {
-      // Create new user
-      const result = await c.env.DB.prepare(
-        `INSERT INTO users (email, password_hash, name, framesphere_user_id)
-         VALUES (?, ?, ?, ?)`
-      ).bind(
-        oauthUser.email,
-        'oauth_' + oauthUser.provider,
-        oauthUser.name,
-        oauthUser.framesphereUserId || null,
-      ).run();
+      // 3. Create new user — try with framesphere_user_id first, fall back without it
+      let result: any = null;
+      try {
+        result = await c.env.DB.prepare(
+          `INSERT INTO users (email, password_hash, name, framesphere_user_id)
+           VALUES (?, ?, ?, ?)`
+        ).bind(
+          oauthUser.email,
+          'oauth_' + oauthUser.provider,
+          oauthUser.name,
+          oauthUser.framesphereUserId || null,
+        ).run();
+      } catch {
+        // framesphere_user_id column doesn't exist yet — insert without it
+        result = await c.env.DB.prepare(
+          `INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)`
+        ).bind(oauthUser.email, 'oauth_' + oauthUser.provider, oauthUser.name).run();
+      }
 
-      if (!result.success) return c.json({ error: 'Failed to create user' }, 500);
+      if (!result?.success) return c.json({ error: 'Failed to create user' }, 500);
 
       user = { id: result.meta.last_row_id, email: oauthUser.email, name: oauthUser.name };
-
       const token = await generateToken({ id: user.id, email: user.email, name: user.name }, c.env.JWT_SECRET);
-      return c.json({ message: 'OAuth login successful', token, isNewUser: true, user: { id: user.id, email: user.email, name: user.name } });
+      return c.json({ message: 'OAuth login successful', token, isNewUser: true, provider: oauthUser.provider, user: { id: user.id, email: user.email, name: user.name } });
     }
 
-    // Link FrameSphere ID to existing user if missing
-    if (oauthUser.framesphereUserId && !user.framesphere_user_id) {
-      await c.env.DB.prepare(
-        'UPDATE users SET framesphere_user_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-      ).bind(oauthUser.framesphereUserId, user.id).run();
+    // 4. Link FrameSphere ID to existing user if not linked yet
+    if (oauthUser.framesphereUserId) {
+      try {
+        await c.env.DB.prepare(
+          'UPDATE users SET framesphere_user_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND (framesphere_user_id IS NULL OR framesphere_user_id = "")'
+        ).bind(oauthUser.framesphereUserId, user.id).run();
+      } catch {
+        // Column doesn't exist yet — ignore, will work after migration
+      }
     }
 
     const token = await generateToken({ id: user.id, email: user.email, name: user.name }, c.env.JWT_SECRET);
-    return c.json({ message: 'OAuth login successful', token, isNewUser: false, user: { id: user.id, email: user.email, name: user.name } });
+    return c.json({ message: 'OAuth login successful', token, isNewUser: false, provider: oauthUser.provider, user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
     console.error('OAuth login error:', err);
     return c.json({ error: 'Failed to process OAuth login' }, 500);
