@@ -393,6 +393,8 @@ export function AlertsTab({ apiKeyId, apiKeyName, isPro, onUpgrade }: AlertsTabP
         </div>
       )}
 
+      <ReportSchedulePanel apiKeyId={apiKeyId} isPro={isPro} onUpgrade={onUpgrade} />
+
       <style>{`
         @keyframes slideDown { from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)} }
         @keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
@@ -428,6 +430,105 @@ export function ProGate({ feature, onUpgrade, compact }: { feature: ProFeatureFl
       >
         Auf Pro upgraden – €4,99/Mo →
       </button>
+    </div>
+  );
+}
+
+// ── Report Schedule Panel ───────────────────────────────────────────────────────────────────
+
+function ReportSchedulePanel({ apiKeyId, isPro, onUpgrade }: { apiKeyId: number | null; isPro: boolean; onUpgrade: () => void }) {
+  const [email, setEmail] = useState('');
+  const [frequency, setFrequency] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
+  const [enabled, setEnabled] = useState(false);
+  const [migration, setMigration] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  useEffect(() => {
+    if (!apiKeyId || !isPro) return;
+    api.getReportSchedule(apiKeyId).then(({ data }) => {
+      if (data?.migrationRequired) { setMigration(true); return; }
+      if (data?.schedule) {
+        setEmail(data.schedule.report_email || '');
+        setFrequency(data.schedule.frequency || 'weekly');
+        setEnabled(!!data.schedule.enabled);
+      }
+    });
+  }, [apiKeyId, isPro]);
+
+  const save = async () => {
+    if (!apiKeyId || !email.trim()) return;
+    setSaving(true); setMsg(null);
+    const { error } = await api.saveReportSchedule(apiKeyId, { reportEmail: email.trim(), frequency, enabled });
+    setMsg(error ? { ok: false, text: error } : { ok: true, text: 'Gespeichert ✓' });
+    setSaving(false); setTimeout(() => setMsg(null), 3000);
+  };
+
+  const test = async () => {
+    if (!apiKeyId || !email.trim()) return;
+    setTesting(true); setMsg(null);
+    const { error } = await api.sendTestReport(apiKeyId, email.trim());
+    setMsg(error ? { ok: false, text: error } : { ok: true, text: 'Test-Report wird gesendet ✓' });
+    setTesting(false); setTimeout(() => setMsg(null), 4000);
+  };
+
+  if (!apiKeyId) return null;
+  const iS: React.CSSProperties = { width: '100%', padding: '0.55rem 0.75rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'white', fontSize: '0.875rem', outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.2s' };
+
+  return (
+    <div style={{ marginTop: '1.5rem', padding: '1.125rem 1.375rem', borderRadius: 14, background: 'rgba(14,22,36,0.85)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+        <span style={{ fontSize: '1rem' }}>📊</span>
+        <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white' }}>Scheduled Reports</div>
+        <span style={{ padding: '1px 7px', borderRadius: 5, background: isPro ? 'rgba(16,185,129,0.1)' : 'rgba(139,92,246,0.12)', color: isPro ? '#34d399' : '#a78bfa', border: `1px solid ${isPro ? 'rgba(16,185,129,0.2)' : 'rgba(139,92,246,0.2)'}`, fontSize: '0.65rem', fontWeight: 700 }}>PRO</span>
+        <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.3)', marginLeft: 4 }}>Automatischer Traffic-Bericht per E-Mail</div>
+      </div>
+
+      {!isPro ? (
+        <div style={{ padding: '0.875rem', borderRadius: 10, background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.14)', textAlign: 'center' }}>
+          <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.75rem' }}>Reports mit Top Endpoints, Blockierrate und Traffic-Trend direkt ins Postfach.</p>
+          <button onClick={onUpgrade} style={{ padding: '0.4rem 1.25rem', borderRadius: 7, border: 'none', background: 'linear-gradient(135deg,#7c3aed,#8b5cf6)', color: 'white', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>Pro freischalten</button>
+        </div>
+      ) : migration ? (
+        <div style={{ padding: '0.75rem', borderRadius: 8, background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.18)', fontSize: '0.75rem', color: '#fbbf24', lineHeight: 1.6 }}>
+          ⚠️ DB-Migration nötig:
+          <pre style={{ marginTop: '0.4rem', fontSize: '0.62rem', color: '#93c5fd', fontFamily: 'monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: 6 }}>
+{`npx wrangler d1 execute ratelimit-db --remote --command "CREATE TABLE IF NOT EXISTS report_schedules (id INTEGER PRIMARY KEY AUTOINCREMENT, api_key_id INTEGER NOT NULL UNIQUE, report_email TEXT NOT NULL, frequency TEXT NOT NULL DEFAULT 'weekly', enabled INTEGER DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE)"`}
+          </pre>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: '0.75rem', alignItems: 'end' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>E-Mail Adresse</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="reports@example.com" style={iS} onFocus={e => e.target.style.borderColor = 'rgba(59,130,246,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.3rem' }}>Frequenz</label>
+            <select value={frequency} onChange={e => setFrequency(e.target.value as any)} style={{ ...iS, cursor: 'pointer' }}>
+              <option value="daily">Täglich (08:00)</option>
+              <option value="weekly">Wöchentlich (Mo)</option>
+              <option value="monthly">Monatlich (1.)</option>
+            </select>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <button onClick={() => setEnabled(!enabled)} style={{ width: 32, height: 18, borderRadius: 9, background: enabled ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.08)', border: `1px solid ${enabled ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.12)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '0 2px', transition: 'all 0.2s' }}>
+                <div style={{ width: 12, height: 12, borderRadius: '50%', background: enabled ? '#34d399' : 'rgba(255,255,255,0.3)', transform: enabled ? 'translateX(14px)' : 'translateX(0)', transition: 'all 0.2s' }} />
+              </button>
+              <span style={{ fontSize: '0.65rem', color: enabled ? '#34d399' : 'rgba(255,255,255,0.3)', fontWeight: 600 }}>{enabled ? 'Aktiv' : 'Aus'}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.35rem' }}>
+              <button onClick={save} disabled={saving || !email.trim()} style={{ padding: '0.42rem 0.875rem', borderRadius: 7, border: 'none', background: 'linear-gradient(135deg,#3b82f6,#6366f1)', color: 'white', fontWeight: 700, fontSize: '0.75rem', cursor: saving ? 'wait' : 'pointer', opacity: !email.trim() ? 0.45 : 1 }}>{saving ? '…' : '✓ Speichern'}</button>
+              <button onClick={test} disabled={testing || !email.trim()} style={{ padding: '0.42rem 0.7rem', borderRadius: 7, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', fontWeight: 600, fontSize: '0.75rem', cursor: testing ? 'wait' : 'pointer', opacity: !email.trim() ? 0.45 : 1 }}>{testing ? '…' : 'Test'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {msg && (
+        <div style={{ marginTop: '0.625rem', padding: '0.45rem 0.75rem', borderRadius: 7, background: msg.ok ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${msg.ok ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`, fontSize: '0.75rem', fontWeight: 600, color: msg.ok ? '#34d399' : '#f87171' }}>{msg.text}</div>
+      )}
     </div>
   );
 }

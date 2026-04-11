@@ -345,6 +345,26 @@ class ApiClient {
       body: JSON.stringify({ ip, durationMinutes }),
     });
   }
+
+  // ── Scheduled Reports (Pro) ──────────────────────────────────────────
+
+  async getReportSchedule(apiKeyId: number) {
+    return this.request<{ schedule: any; migrationRequired?: boolean }>(`/api/reports/${apiKeyId}/schedule`);
+  }
+
+  async saveReportSchedule(apiKeyId: number, data: { reportEmail: string; frequency: 'daily' | 'weekly' | 'monthly'; enabled: boolean }) {
+    return this.request<{ message: string }>(`/api/reports/${apiKeyId}/schedule`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async sendTestReport(apiKeyId: number, reportEmail: string) {
+    return this.request<{ message: string }>(`/api/reports/${apiKeyId}/test`, {
+      method: 'POST',
+      body: JSON.stringify({ reportEmail }),
+    });
+  }
 }
 
 export const api = new ApiClient();
