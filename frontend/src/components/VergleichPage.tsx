@@ -95,18 +95,30 @@ export function VergleichPage() {
             ['Kein eigener Server nötig', <Check ok />, <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok />],
             ['Edge Computing (<10ms)', <Check ok />, <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Partial />],
             ['Dashboard / GUI', <Check ok />, <Partial />, <Check ok />, <Check ok={false}/>, <Check ok />],
-            ['IP-Blacklisting', <Check ok />, <Check ok={false}/>, <Check ok />, 'Manuell', <Check ok />],
-            ['IP-Whitelisting', <Check ok />, <Check ok={false}/>, <Check ok />, 'Manuell', <Check ok />],
+            ['JS / Python / Go SDK', <Check ok />, <Check ok />, <Partial />, <Check ok={false}/>, <Check ok={false}/>],
+            ['Express / Next.js Middleware', <Check ok />, <Partial />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
+            ['IP Reputation Score', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Partial />],
+            ['Bot-UA-Erkennung', <Check ok />, <Check ok={false}/>, <Check ok />, <Check ok={false}/>, <Check ok />],
+            ['What-if Simulation', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
+            ['Adaptive Rate Limits (KI)', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
+            ['Auto IP Blocking', <Check ok />, <Check ok={false}/>, <Check ok />, 'Manuell', <Check ok />],
+            ['IP-Blacklisting / Whitelisting', <Check ok />, <Check ok={false}/>, <Check ok />, 'Manuell', <Check ok />],
             ['User-Agent-Filter', <Check ok />, <Check ok={false}/>, <Check ok />, <Check ok={false}/>, <Check ok />],
+            ['Geo-Blocking', <Check ok />, <Check ok={false}/>, <Check ok />, <Check ok={false}/>, <Check ok />],
             ['Token Bucket', <Check ok />, <Check ok />, <Check ok />, 'Custom', <Check ok={false}/>],
-            ['Sliding Window', <Check ok={false}/>, <Check ok />, <Check ok />, 'Custom', <Check ok={false}/>],
+            ['Sliding Window', <Check ok />, <Check ok />, <Check ok />, 'Custom', <Check ok={false}/>],
+            ['Live Stream / Echtzeit-Feed', <Check ok />, <Check ok={false}/>, <Partial />, <Check ok={false}/>, <Check ok={false}/>],
+            ['Explainability (Warum blockiert?)', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
             ['Echtzeit-Analytics', <Check ok />, <Partial />, <Partial />, <Check ok={false}/>, <Partial />],
             ['Request-Logs', <Check ok />, <Check ok={false}/>, <Check ok />, 'Custom', <Partial />],
+            ['Webhook-Alerts (Slack/Discord)', <Check ok />, <Check ok={false}/>, <Check ok />, <Check ok={false}/>, <Partial />],
+            ['Scheduled Email Reports', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
+            ['CSV Log-Export', <Check ok />, <Check ok={false}/>, <Partial />, <Check ok={false}/>, <Partial />],
             ['Multi-API-Key', <Check ok />, <Check ok />, <Check ok />, 'Custom', <Check ok={false}/>],
+            ['Sandbox / Test-Modus', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>],
             ['Kostenlos nutzbar', <Check ok />, <Partial />, <Check ok={false}/>, <Check ok />, <Check ok={false}/>],
             ['Kein Code für Setup', <Check ok />, <Check ok={false}/>, <Check ok={false}/>, <Check ok={false}/>, <Partial />],
             ['DSGVO EU-Storage', <Check ok />, <Partial />, <Partial />, <Check ok />, <Check ok={false}/>],
-            ['Support', 'Ticket-System', 'Community', 'Enterprise', 'Selbst', 'AWS-Support'],
           ]}
         />
 
@@ -166,10 +178,12 @@ export function VergleichPage() {
             <ul style={{ ...B.ul, marginBottom: 0, fontSize: '0.875rem' }}>
               <li><strong style={{ color: '#e2e8f0' }}>Managed Service</strong> – du schickst nur einen HTTP-Request</li>
               <li>Dashboard mit GUI für Konfiguration</li>
-              <li>IP-Filter, Blacklisting, Analytics out-of-the-box</li>
-              <li>Kein eigener Code nötig</li>
-              <li>Token-System: Konfiguration über UI, nicht Code</li>
-              <li>Kostenlos starten, kein Kreditkarte</li>
+              <li>JS/Python/Go SDK + Express/Next.js Middleware</li>
+              <li>IP-Filter, Blacklisting, Auto-Blocking out-of-the-box</li>
+              <li>IP Reputation Score + Bot-Erkennung</li>
+              <li>What-if Simulation + Adaptive Limits (KI)</li>
+              <li>Live Stream + Explainability Panel</li>
+              <li>Kostenlos starten, keine Kreditkarte</li>
             </ul>
           </div>
           <div style={{ ...B.card, borderColor: 'rgba(16,185,129,0.25)' }}>

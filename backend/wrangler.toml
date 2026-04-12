@@ -3,8 +3,8 @@ main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
 [triggers]
-crons = ["0 8 * * *", "0 8 * * 1", "0 8 1 * *"]
-# Daily: 08:00 UTC, Weekly: Monday 08:00 UTC, Monthly: 1st 08:00 UTC
+crons = ["0 8 * * *"]
+# Daily: 08:00 UTC, Weekly: Monday 08:00 UTC, Monthly: 1st 08:00 UTC //Veraltet
 
 [[ d1_databases ]]
 binding = "DB"

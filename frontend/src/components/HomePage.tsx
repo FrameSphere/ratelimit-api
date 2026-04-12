@@ -140,20 +140,20 @@ export function HomePage() {
           )}
 
           <div style={{ display: 'inline-block', background: 'linear-gradient(135deg,rgba(59,130,246,0.1),rgba(139,92,246,0.1))', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 50, padding: '5px 18px', marginBottom: '1.5rem', fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)' }}>
-            ⚡ Cloudflare Workers • Edge Computing • Global
+            ⚡ Smart API Protection Platform • Edge Computing • SDK • Bot Intelligence
           </div>
 
           <h1 style={{ fontSize: 'clamp(2.5rem,8vw,5rem)', fontWeight: '800', marginBottom: '1.5rem', lineHeight: '1.1', letterSpacing: '-0.02em' }}>
             <span style={{ background: 'linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Rate Limiting
+              API Protection
             </span>
             <br />
-            <span style={{ color: 'white' }}>für moderne APIs</span>
+            <span style={{ color: 'white' }}>der nächsten Generation</span>
           </h1>
 
           <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.55)', marginBottom: '3rem', maxWidth: '700px', margin: '0 auto 3rem', lineHeight: '1.65' }}>
-            Schütze deine APIs vor Missbrauch und Überlastung. Einfache Integration,
-            leistungsstarke Kontrolle und detaillierte Analytics – alles in einer Lösung.
+            Rate Limiting mit JS/Python/Go SDK, IP Reputation Score, Bot-Erkennung,
+            What-if Simulation und Adaptive Limits — alles auf Cloudflare Edge.
           </p>
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }}>
@@ -219,22 +219,28 @@ export function HomePage() {
         )}
 
         {/* ── Features ── */}
-        <div id="features" style={{ maxWidth: '1400px', margin: '4rem auto 8rem', padding: '0 2rem' }}>
+        <div id="features" style={{ maxWidth: '1400px', margin: '4rem auto 0', padding: '0 2rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '2.25rem', fontWeight: '700', marginBottom: '0.75rem', color: 'white' }}>Alles was du brauchst</h2>
-            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '560px', margin: '0 auto' }}>
-              Professionelles Rate Limiting mit Enterprise-Features für Teams jeder Größe
+            <h2 style={{ fontSize: '2.25rem', fontWeight: '700', marginBottom: '0.75rem', color: 'white' }}>Smart API Protection Platform</h2>
+            <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.45)', maxWidth: '620px', margin: '0 auto' }}>
+              Von einfachem Rate Limiting bis zu Enterprise-grade Bot Intelligence — alles in einem Service
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(320px,1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '1.25rem' }}>
             {[
-              { gradient: ['#3b82f6','#2563eb'], border: 'rgba(59,130,246,0.2)', glow: 'rgba(59,130,246,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Echtzeit-Kontrolle', desc: 'Passe deine Rate Limits sofort an – keine Deployments, keine Downtime.' },
-              { gradient: ['#8b5cf6','#7c3aed'], border: 'rgba(139,92,246,0.2)', glow: 'rgba(139,92,246,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>, title: 'Intelligente Filter', desc: 'IP-Blacklists, Whitelists und User-Agent-Filter für maximale Kontrolle.' },
-              { gradient: ['#ec4899','#db2777'], border: 'rgba(236,72,153,0.2)', glow: 'rgba(236,72,153,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, title: 'Detaillierte Analytics', desc: 'Echtzeit-Charts, Request-Logs und vollständige Traffic-Analysen.' },
-              { gradient: ['#10b981','#059669'], border: 'rgba(16,185,129,0.2)', glow: 'rgba(16,185,129,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>, title: 'Multi-Konfiguration', desc: 'Mehrere API Keys mit unterschiedlichen Limits für verschiedene Umgebungen.' },
-              { gradient: ['#f59e0b','#d97706'], border: 'rgba(245,158,11,0.2)', glow: 'rgba(245,158,11,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>, title: 'Edge Performance', desc: 'Cloudflare Workers Edge Network – minimale Latenz, global verfügbar.' },
-              { gradient: ['#6366f1','#4f46e5'], border: 'rgba(99,102,241,0.2)', glow: 'rgba(99,102,241,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, title: 'Enterprise Security', desc: 'JWT-Tokens, OAuth und vollständige Zugriffskontrolle für Teams.' },
+              { gradient: ['#3b82f6','#2563eb'], border: 'rgba(59,130,246,0.2)', glow: 'rgba(59,130,246,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>, title: 'Echtzeit-Kontrolle', desc: 'Rate Limits sofort ändern ohne Deploy. Änderungen greifen in unter 1 Sekunde weltweit.' },
+              { gradient: ['#8b5cf6','#7c3aed'], border: 'rgba(139,92,246,0.2)', glow: 'rgba(139,92,246,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, title: 'IP Reputation Score', desc: 'Automatischer 0–100 Score pro IP basierend auf Blockierrate, Volumen und Bot-User-Agents.' },
+              { gradient: ['#ec4899','#db2777'], border: 'rgba(236,72,153,0.2)', glow: 'rgba(236,72,153,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>, title: 'What-if Simulation', desc: '7-Tage Traffic-Replay gegen hypothetisches Limit. Sieh genau wie viele Requests anders blockiert worden wären.' },
+              { gradient: ['#10b981','#059669'], border: 'rgba(16,185,129,0.2)', glow: 'rgba(16,185,129,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg>, title: 'Adaptive Rate Limits', desc: 'KI analysiert 7-Tage-Traffic und empfiehlt optimale Limits. Ein-Klick-Apply oder vollautomatisch.' },
+              { gradient: ['#f59e0b','#d97706'], border: 'rgba(245,158,11,0.2)', glow: 'rgba(245,158,11,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, title: 'Edge Performance', desc: 'Cloudflare Workers — unter 10ms Latenz weltweit, 300+ Points of Presence, kein Origin-Server-Hit.' },
+              { gradient: ['#6366f1','#4f46e5'], border: 'rgba(99,102,241,0.2)', glow: 'rgba(99,102,241,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, title: 'Auto IP Blocking', desc: 'Automatische temporäre Sperrung nach N Violations. Konfigurierbar: Schwellwert, Zeitfenster, Sperrdauer.' },
+              { gradient: ['#06b6d4','#0891b2'], border: 'rgba(6,182,212,0.2)', glow: 'rgba(6,182,212,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>, title: 'Live Stream', desc: 'Echtzeit-Request-Feed mit Attack Mode. Jeder Request live mit IP, Endpoint, Status und Block-Grund.' },
+              { gradient: ['#f43f5e','#e11d48'], border: 'rgba(244,63,94,0.2)', glow: 'rgba(244,63,94,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, title: 'Webhook-Alerts', desc: 'Slack, Discord, Custom HTTP mit HMAC-SHA256 Signierung. Plus Scheduled Email Reports.' },
+              { gradient: ['#84cc16','#65a30d'], border: 'rgba(132,204,22,0.2)', glow: 'rgba(132,204,22,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>, title: 'Sandbox & Explainability', desc: 'Test-Modus ohne echte Requests. Jeder Block erklärt warum und wie der Nutzer das beheben kann.' },
+              { gradient: ['#a78bfa','#8b5cf6'], border: 'rgba(167,139,250,0.2)', glow: 'rgba(167,139,250,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>, title: 'Anomaly Detection', desc: 'Automatische Erkennung von Traffic-Spikes, erhöhter Blockierrate und IP-Dominanz.' },
+              { gradient: ['#fb923c','#ea580c'], border: 'rgba(251,146,60,0.2)', glow: 'rgba(251,146,60,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>, title: 'Geo-Blocking', desc: 'Länder-spezifische Regeln mit CF-IPCountry. Blocklists und Allowlists für granulare Zugriffskontrolle.' },
+              { gradient: ['#34d399','#10b981'], border: 'rgba(52,211,153,0.2)', glow: 'rgba(52,211,153,0.25)', icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, title: 'Analytics & Near-Limit', desc: '30-Tage Charts, Top-IPs, CSV-Export, Retry-Insights und Gauge-Panel für alle Keys auf einen Blick.' },
             ].map(f => (
               <div key={f.title} style={{ background: `linear-gradient(135deg,${f.border.replace('0.2','0.05')} 0%,transparent 100%)`, border: `1px solid ${f.border}`, borderRadius: 14, padding: '1.75rem', transition: 'transform .2s,box-shadow .2s', cursor: 'default' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform='translateY(-3px)'; (e.currentTarget as HTMLElement).style.boxShadow=`0 16px 50px -10px ${f.glow}`; }}
@@ -242,10 +248,70 @@ export function HomePage() {
                 <div style={{ width:52,height:52,borderRadius:10,background:`linear-gradient(135deg,${f.gradient[0]},${f.gradient[1]})`,display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'1.25rem' }}>
                   {f.icon}
                 </div>
-                <h3 style={{ fontSize:'1.15rem',fontWeight:700,color:'white',marginBottom:'0.6rem' }}>{f.title}</h3>
-                <p style={{ color:'rgba(255,255,255,0.5)',lineHeight:1.6,fontSize:'0.9rem' }}>{f.desc}</p>
+                <h3 style={{ fontSize:'1.1rem',fontWeight:700,color:'white',marginBottom:'0.6rem' }}>{f.title}</h3>
+                <p style={{ color:'rgba(255,255,255,0.5)',lineHeight:1.6,fontSize:'0.88rem' }}>{f.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ── Integration Gallery ── */}
+        <div style={{ maxWidth: '1400px', margin: '6rem auto 8rem', padding: '0 2rem' }}>
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: 50, padding: '4px 14px', fontSize: '0.78rem', color: '#93c5fd', fontWeight: 600, marginBottom: '1rem' }}>
+              ⚡ Integration in unter 2 Minuten
+            </div>
+            <h2 style={{ fontSize: '1.85rem', fontWeight: 800, color: 'white', marginBottom: '0.6rem' }}>Offizielles SDK für jeden Stack</h2>
+            <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.45)', maxWidth: '500px', margin: '0 auto' }}>
+              JS/TS, Python, Go — plus fertige Middleware für alle gängigen Frameworks
+            </p>
+          </div>
+
+          {/* Code snippet */}
+          <div style={{ background: 'rgba(4,9,20,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, overflow: 'hidden', maxWidth: 680, margin: '0 auto 2.5rem' }}>
+            <div style={{ padding: '0.6rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>typescript</span>
+              <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)' }}>Express Middleware</span>
+            </div>
+            <pre style={{ margin: 0, padding: '1.25rem', fontSize: '0.82rem', lineHeight: 1.7, color: '#e2e8f0', fontFamily: "'Fira Code', monospace", overflowX: 'auto' }}><code>{`import { createExpressMiddleware } from '@ratelimit-api/sdk';
+
+app.use('/api/', createExpressMiddleware({
+  apiKey: process.env.RATELIMIT_API_KEY,
+  failureMode: 'open',
+  onBlocked: (req, res, result) => {
+    res.status(429).json({ error: 'Too many requests',
+      retryAfter: result.retryAfter });
+  },
+}));`}</code></pre>
+          </div>
+
+          {/* Framework pills */}
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {[
+              { icon: '🟢', label: 'Node.js SDK', sub: 'npm install' },
+              { icon: '▲', label: 'Next.js', sub: 'Middleware' },
+              { icon: '🟠', label: 'CF Workers', sub: 'Snippet' },
+              { icon: '🐍', label: 'Python SDK', sub: 'pip install' },
+              { icon: '🔵', label: 'Go SDK', sub: 'go get' },
+              { icon: '⚡', label: 'REST API', sub: 'cURL / HTTP' },
+            ].map(f => (
+              <a key={f.label} href="/integrations" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.55rem 1.125rem', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', transition: 'all 0.15s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(59,130,246,0.12)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.3)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'; }}>
+                <span style={{ fontSize: '1rem' }}>{f.icon}</span>
+                <div>
+                  <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>{f.label}</div>
+                  <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)' }}>{f.sub}</div>
+                </div>
+              </a>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
+            <a href="/integrations" style={{ fontSize: '0.85rem', color: '#60a5fa', textDecoration: 'none' }}
+               onMouseEnter={e => (e.currentTarget.style.color = '#93c5fd')}
+               onMouseLeave={e => (e.currentTarget.style.color = '#60a5fa')}>
+              Alle Integrationen & SDK-Dokumentation ansehen →
+            </a>
           </div>
         </div>
 

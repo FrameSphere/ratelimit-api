@@ -14,10 +14,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary Meta Tags -->
-    <title>API Rate Limiting Service mit Cloudflare Workers | RateLimit API</title>
-    <meta name="title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
-    <meta name="description" content="API Rate Limiting Service auf Cloudflare Workers Edge Network. Schütze deine APIs vor Missbrauch, DDoS und Überlastung – mit Token Bucket, IP-Filter und Echtzeit-Analytics. Kostenlos starten." />
-    <meta name="keywords" content="api rate limiting, rate limiting service, cloudflare workers rate limit, api throttling, api schutz, ddos protection api, token bucket algorithm, rate limiter saas, api security cloudflare, request limiting tool, ip blacklist api, api rate limit tool" />
+    <title>API Rate Limiting Service – SDK, IP Reputation & Simulation | RateLimit API</title>
+    <meta name="title" content="API Rate Limiting Service – SDK, IP Reputation & Simulation | RateLimit API" />
+    <meta name="description" content="Smart API Protection Platform auf Cloudflare Workers. Rate Limiting mit JS/Python/Go SDK, IP Reputation Score, Bot-Erkennung, What-if Simulation, Adaptive Limits & Live Stream. Kostenlos starten." />
+    <meta name="keywords" content="api rate limiting, rate limiting service, cloudflare workers rate limit, api throttling, api schutz, ddos protection api, token bucket algorithm, rate limiter saas, api security cloudflare, request limiting tool, ip blacklist api, api rate limit tool, express rate limit middleware, nextjs api rate limiting, python rate limit sdk, go rate limiting, ip reputation score, bot detection api, adaptive rate limiting, rate limit simulation, api abuse protection, rate limiting as a service, auto ip blocking, geo blocking api, sliding window rate limit" />
     <meta name="author" content="RateLimit API" />
     <meta name="robots" content="index, follow" />
     <meta name="language" content="de" />
@@ -26,8 +26,8 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://ratelimit-api.pages.dev/" />
-    <meta property="og:title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
-    <meta property="og:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Token Bucket, IP-Filter, Echtzeit-Analytics – alles auf Cloudflare Edge. Kostenlos starten." />
+    <meta property="og:title" content="API Rate Limiting Service – SDK, IP Reputation & Simulation | RateLimit API" />
+    <meta property="og:description" content="Smart API Protection Platform auf Cloudflare Workers. JS/Python/Go SDK, IP Reputation Score, Bot-Erkennung, What-if Simulation & Adaptive Limits. Kostenlos starten." />
     <meta property="og:image" content="https://ratelimit-api.pages.dev/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -39,8 +39,8 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@ratelimitapi" />
     <meta name="twitter:url" content="https://ratelimit-api.pages.dev/" />
-    <meta name="twitter:title" content="API Rate Limiting Service mit Cloudflare Workers | RateLimit API" />
-    <meta name="twitter:description" content="Schütze deine APIs vor Missbrauch und Überlastung. Token Bucket, IP-Filter, Echtzeit-Analytics – alles auf Cloudflare Edge." />
+    <meta name="twitter:title" content="API Rate Limiting Service – SDK, IP Reputation & Simulation | RateLimit API" />
+    <meta name="twitter:description" content="Smart API Protection Platform auf Cloudflare Workers. JS/Python/Go SDK, IP Reputation Score, Bot-Erkennung, Adaptive Limits & Live Stream." />
     <meta name="twitter:image" content="https://ratelimit-api.pages.dev/og-image.png" />
     <meta name="twitter:image:alt" content="RateLimit API Dashboard" />
 
@@ -80,16 +80,31 @@
         "priceCurrency": "EUR",
         "description": "Kostenlos starten – kein Kreditkarte erforderlich"
       },
-      "description": "API Rate Limiting Service auf Cloudflare Workers Edge Network. Schütze APIs vor Missbrauch mit Token Bucket Algorithmus, IP-Blacklisting und Echtzeit-Analytics.",
+      "description": "Smart API Protection Platform auf Cloudflare Workers Edge Network. Rate Limiting mit JS/Python/Go SDK, IP Reputation Score, Bot-Erkennung, What-if Simulation, Adaptive Limits, Auto IP Blocking und Live Stream.",
       "featureList": [
-        "Token Bucket Rate Limiting Algorithmus",
-        "IP Blacklisting und Whitelisting",
-        "Echtzeit Rate Limit Kontrolle ohne Deployment",
-        "Detaillierte Analytics und Request-Logs",
+        "Token Bucket & Sliding Window Rate Limiting",
+        "JavaScript / TypeScript SDK (npm install @ratelimit-api/sdk)",
+        "Python SDK (pip install ratelimit-api)",
+        "Go SDK",
+        "Express Middleware & Next.js Middleware",
+        "Cloudflare Worker Snippet",
+        "IP Reputation Score (0-100) & Bot-Erkennung",
+        "What-if Simulation – Limit-Replay gegen historischen Traffic",
+        "Adaptive Rate Limits mit KI-Vorschlägen",
+        "Auto IP Blocking nach N Violations",
+        "Geo-Blocking & Geo-Allowlist (CF-IPCountry)",
+        "User-Agent Blocking & IP Blacklist/Whitelist",
+        "Echtzeit Live Stream mit Attack Mode",
+        "Explainability Panel (Warum blockiert?)",
+        "Near-Limit Gauge-Panel",
+        "Anomaly Detection (Spike, IP-Dominanz)",
+        "Webhook-Alerts: Slack, Discord, Custom HTTP",
+        "HMAC-SHA256 Webhook-Signierung",
+        "Scheduled Email Reports (Daily/Weekly/Monthly)",
+        "CSV Log-Export",
+        "Sandbox / Test-Modus",
         "Cloudflare Workers Edge Network – unter 10ms Latenz",
-        "JWT und OAuth Integration",
-        "Multi-API-Key Support",
-        "User-Agent Filter"
+        "OAuth: Google, GitHub, FrameSphere"
       ],
       "url": "https://ratelimit-api.pages.dev",
       "screenshot": "https://ratelimit-api.pages.dev/screenshot.png",
@@ -144,7 +159,31 @@
           "name": "Was ist der Unterschied zwischen RateLimit API und Upstash?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Upstash Rate Limiting ist eine Low-Level-Library für eigene Cloudflare Workers. RateLimit API ist ein fertiger Managed Service mit Dashboard, IP-Filtern und Analytics – ohne eigenen Code."
+            "text": "Upstash Rate Limiting ist eine Low-Level-Library für eigene Cloudflare Workers. RateLimit API ist ein fertiger Managed Service mit Dashboard, IP-Filtern, Analytics, SDKs für JS/Python/Go und Middleware für Express/Next.js – ohne eigenen Code."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Gibt es ein SDK für RateLimit API?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Ja. Es gibt offizielle SDKs für JavaScript/TypeScript (npm install @ratelimit-api/sdk), Python (pip install ratelimit-api) und Go. Zusätzlich gibt es fertige Middleware für Express, Next.js und Cloudflare Workers zum direkten Copy-Paste."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Was ist IP Reputation Scoring?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Der IP Reputation Score (0-100) bewertet jede IP automatisch basierend auf Blockierrate, Anfragevolumen, bekannten Bot-User-Agents und Auto-Block-Status. IPs mit Score ≥70 gelten als hohes Risiko und können automatisch gesperrt werden."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Was ist die What-if Simulation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Die What-if Simulation repliziert den echten Traffic der letzten 7 Tage gegen ein hypothetisches Limit und zeigt genau, wie viele Requests mehr oder weniger blockiert worden wären. So kannst du Limit-Änderungen gefahrlos testen bevor du sie live stellst."
           }
         }
       ]

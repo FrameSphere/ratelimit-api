@@ -490,13 +490,6 @@ function ReportSchedulePanel({ apiKeyId, isPro, onUpgrade }: { apiKeyId: number 
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.75rem' }}>Reports mit Top Endpoints, Blockierrate und Traffic-Trend direkt ins Postfach.</p>
           <button onClick={onUpgrade} style={{ padding: '0.4rem 1.25rem', borderRadius: 7, border: 'none', background: 'linear-gradient(135deg,#7c3aed,#8b5cf6)', color: 'white', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>Pro freischalten</button>
         </div>
-      ) : migration ? (
-        <div style={{ padding: '0.75rem', borderRadius: 8, background: 'rgba(245,158,11,0.07)', border: '1px solid rgba(245,158,11,0.18)', fontSize: '0.75rem', color: '#fbbf24', lineHeight: 1.6 }}>
-          ⚠️ DB-Migration nötig:
-          <pre style={{ marginTop: '0.4rem', fontSize: '0.62rem', color: '#93c5fd', fontFamily: 'monospace', wordBreak: 'break-all', whiteSpace: 'pre-wrap', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: 6 }}>
-{`npx wrangler d1 execute ratelimit-db --remote --command "CREATE TABLE IF NOT EXISTS report_schedules (id INTEGER PRIMARY KEY AUTOINCREMENT, api_key_id INTEGER NOT NULL UNIQUE, report_email TEXT NOT NULL, frequency TEXT NOT NULL DEFAULT 'weekly', enabled INTEGER DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (api_key_id) REFERENCES api_keys(id) ON DELETE CASCADE)"`}
-          </pre>
-        </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: '0.75rem', alignItems: 'end' }}>
           <div>

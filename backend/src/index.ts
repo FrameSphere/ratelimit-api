@@ -15,6 +15,8 @@ import { createConfig, getConfigs, updateConfig, deleteConfig } from './ratelimi
 import { createFilter, getFilters, deleteFilter } from './ratelimit/filters';
 import { checkRateLimit, getRateLimitStatus } from './ratelimit/checker';
 import { getAdaptiveSuggestions, applyAdaptiveSuggestion } from './ratelimit/adaptive';
+import { simulateLimit } from './ratelimit/simulation';
+import { getIPReputation, getTopSuspiciousIPs } from './ratelimit/reputation';
 import {
   getAutoBlockSettings, upsertAutoBlockSettings,
   getBlockedIPs, unblockIP, clearExpiredBlocks, manualBlockIP,
@@ -36,8 +38,8 @@ app.use('/*', corsMiddleware);
 
 app.get('/', (c) => c.json({
   message: 'Rate Limit API is running',
-  version: '3.0.0',
-  features: ['sliding_window', 'token_bucket', 'per_endpoint_limits', 'adaptive_rl', 'email_alerts'],
+  version: '4.0.0',
+  features: ['sliding_window', 'token_bucket', 'per_endpoint_limits', 'adaptive_rl', 'simulation', 'ip_reputation', 'email_alerts'],
 }));
 
 // ── Public routes ──────────────────────────────────────────────────────────
@@ -109,6 +111,13 @@ app.get('/api/logs/:apiKeyId', getRecentLogs);
 // Adaptive Rate Limiting (Pro)
 app.get('/api/adaptive/:apiKeyId', getAdaptiveSuggestions);
 app.post('/api/adaptive/apply', applyAdaptiveSuggestion);
+
+// Simulation / What-if Analysis (Pro)
+app.post('/api/simulate/:apiKeyId', simulateLimit);
+
+// IP Reputation & Bot Intelligence (Pro)
+app.get('/api/reputation/:apiKeyId/ip', getIPReputation);
+app.get('/api/reputation/:apiKeyId/top', getTopSuspiciousIPs);
 
 // Auto IP Blocking (Pro)
 app.get('/api/autoblock/:apiKeyId/settings', getAutoBlockSettings);

@@ -202,37 +202,23 @@ import "github.com/framesphere/ratelimit-api-go"
 *Ziel: Alle Features werden gefunden und konvertieren*
 
 #### 4.1 HomePage Komplett-Überarbeitung
-- [ ] **Hero Section**: "Smart API Protection" Headline
-  - Code-Snippet im Hero (Copy-Paste)
-  - "1-Minute Setup" USP
-- [ ] **Feature Grid**: alle 20+ Features visuell
-- [ ] **Vergleichstabelle**: RateLimit API vs Cloudflare vs AWS WAF vs Kong
-- [ ] **Social Proof**: Requests-Counter, Attack-Counter live
-- [ ] **Integration Gallery**: Express, Next.js, Python, Go Icons
+- [x] **Hero Section**: "API Protection der nächsten Generation" Headline
+  - Badge mit allen neuen Features
+  - Beschreibung mit SDK, IP Reputation, Simulation, Adaptive
+- [x] **Feature Grid**: 12 Features (IP Reputation, Simulation, Adaptive RL, Auto Block, Live Stream, Anomaly Detection, Geo-Blocking, Sandbox, etc.)
+- [x] **Integration Gallery**: Express, Next.js, Python, Go, CF Workers mit Live-Code-Snippet
 
 #### 4.2 SEO-Technisch
-- [ ] `<head>` Meta-Tags: title, description, keywords, og:*, twitter:*
-- [ ] Structured Data (JSON-LD): SoftwareApplication Schema
+- [x] `<head>` Meta-Tags aktualisiert: title, description, keywords – alle neuen Features
+- [x] Open Graph & Twitter Cards aktualisiert
+- [x] Structured Data (JSON-LD SoftwareApplication): 23-Punkte featureList
+- [x] FAQ JSON-LD: 3 neue Fragen (SDK, IP Reputation, Simulation)
 - [ ] Sitemap.xml automatisch generieren
-- [ ] robots.txt optimieren
-- [ ] Core Web Vitals optimieren
-- [ ] Canonical URLs
+- [ ] robots.txt prüfen
 
-#### 4.3 Keyword-Targets
-Primär:
-- "API Rate Limiting"
-- "Rate Limit API"  
-- "API Protection"
-- "API Security Cloudflare Workers"
-
-Long-Tail:
-- "Rate Limiting as a Service"
-- "Express Rate Limit Middleware"
-- "Next.js API Rate Limiting"
-- "Cloudflare API Protection"
-- "Auto Rate Limiting AI"
-- "IP Blocking API"
-- "Token Bucket Algorithm API"
+#### 4.3 Vergleichsseiten
+- [x] VergleichPage Feature-Matrix: 27 Zeilen, alle neuen Features eingetragen
+- [x] Upstash-Detailvergleich aktualisiert
 
 #### 4.4 Docs-Komplettüberarbeitung
 - [ ] Quickstart Guide (< 5 Min bis erster Request)

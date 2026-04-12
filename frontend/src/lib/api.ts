@@ -56,6 +56,32 @@ export interface AnalyticsData {
   chart: Array<{ hour: string; requests: number; blocked: number }>;
 }
 
+export interface SimulationResult {
+  hasData: boolean;
+  message?: string;
+  config?: { currentLimit: number; hypotheticalLimit: number; windowSeconds: number };
+  current?: { allowed: number; blocked: number; blockPct: number };
+  simulated?: { allowed: number; blocked: number; blockPct: number };
+  delta?: { blockedDiff: number; blockedDiffPct: number; direction: string; summary: string };
+  totalRequests?: number;
+  hourlyChart?: Array<{ hour: string; curAllowed: number; curBlocked: number; simAllowed: number; simBlocked: number }>;
+}
+
+export interface IPReputation {
+  ip: string;
+  reputationScore: number;
+  risk: 'low' | 'medium' | 'high';
+  factors: string[];
+  stats: {
+    totalRequests: number;
+    blockedCount: number;
+    blockRatePct: number;
+    distinctEndpoints: number;
+    isBotUA: boolean;
+    isAutoBlocked: boolean;
+  };
+}
+
 interface ApiResponse<T = any> {
   data?: T;
   error?: string;
@@ -87,12 +113,10 @@ class ApiClient {
         ...options,
         headers: { ...headers, ...(options.headers || {}) },
       });
-      // Safe JSON parse — Cloudflare may return HTML on 404/503
       let data: any = {};
       try {
         data = await response.json();
       } catch {
-        // non-JSON response (e.g. Cloudflare HTML error page)
         if (!response.ok) return { error: `HTTP ${response.status}: Route not found or server error` };
       }
       if (!response.ok) return { error: data?.error || `HTTP ${response.status}` };
@@ -121,6 +145,24 @@ class ApiClient {
 
   async getProfile() {
     return this.request<{ user: User }>('/auth/profile');
+  }
+
+  async updateProfile(name: string) {
+    return this.request<{ user: User }>('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    return this.request<{ message: string }>('/auth/password', {
+      method: 'PUT',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+  }
+
+  async deleteAccount() {
+    return this.request<{ message: string }>('/auth/account', { method: 'DELETE' });
   }
 
   // ── API Keys ──────────────────────────────────────────────────────────────
@@ -198,7 +240,7 @@ class ApiClient {
     return this.request<{ message: string }>(`/api/filters/${id}`, { method: 'DELETE' });
   }
 
-  // ── Rate Limit Status (Live Headers) ────────────────────────────────────────
+  // ── Rate Limit Status ─────────────────────────────────────────────────────
 
   async getRateLimitStatus(apiKey: string, endpoint?: string) {
     const params = new URLSearchParams({ apiKey });
@@ -206,18 +248,7 @@ class ApiClient {
     return this.request<any>(`/check/status?${params}`);
   }
 
-  // ── Adaptive Rate Limiting (Pro) ─────────────────────────────────────────────
-
-  async getAdaptiveSuggestions(apiKeyId: number) {
-    return this.request<{ suggestions: any[] }>(`/api/adaptive/${apiKeyId}`);
-  }
-
-  async applyAdaptiveSuggestion(configId: number) {
-    return this.request<{ message: string; newLimit: number }>('/api/adaptive/apply', {
-      method: 'POST',
-      body: JSON.stringify({ configId }),
-    });
-  }
+  // ── Analytics ─────────────────────────────────────────────────────────────
 
   async getAnalytics(apiKeyId: number, range: string = '24h') {
     return this.request<any>(`/api/analytics/${apiKeyId}?range=${range}`);
@@ -250,6 +281,41 @@ class ApiClient {
     return this.request<{ keys: any[] }>('/api/analytics/all/usage');
   }
 
+  // ── Adaptive Rate Limiting (Pro) ──────────────────────────────────────────
+
+  async getAdaptiveSuggestions(apiKeyId: number) {
+    return this.request<{ suggestions: any[] }>(`/api/adaptive/${apiKeyId}`);
+  }
+
+  async applyAdaptiveSuggestion(configId: number) {
+    return this.request<{ message: string; newLimit: number }>('/api/adaptive/apply', {
+      method: 'POST',
+      body: JSON.stringify({ configId }),
+    });
+  }
+
+  // ── Simulation / What-if (Pro) ────────────────────────────────────────────
+
+  async simulateLimit(apiKeyId: number, hypotheticalLimit: number, opts?: {
+    windowSeconds?: number;
+    configId?: number;
+  }) {
+    return this.request<SimulationResult>(`/api/simulate/${apiKeyId}`, {
+      method: 'POST',
+      body: JSON.stringify({ hypotheticalLimit, ...opts }),
+    });
+  }
+
+  // ── IP Reputation (Pro) ───────────────────────────────────────────────────
+
+  async getIPReputation(apiKeyId: number, ip: string) {
+    return this.request<IPReputation>(`/api/reputation/${apiKeyId}/ip?ip=${encodeURIComponent(ip)}`);
+  }
+
+  async getTopSuspiciousIPs(apiKeyId: number) {
+    return this.request<{ ips: IPReputation[] }>(`/api/reputation/${apiKeyId}/top`);
+  }
+
   // ── Stripe ────────────────────────────────────────────────────────────────
 
   async createCheckoutSession(successUrl?: string, cancelUrl?: string) {
@@ -269,21 +335,17 @@ class ApiClient {
     );
   }
 
-  // ── Alert Configs ───────────────────────────────────────────────────────────
+  // ── Alerts (Pro) ──────────────────────────────────────────────────────────
 
   async getAlerts(apiKeyId: number) {
     return this.request<{ alerts: any[] }>(`/api/alerts/${apiKeyId}`);
   }
 
   async createAlert(data: {
-    apiKeyId: number;
-    name: string;
-    webhookUrl: string;
+    apiKeyId: number; name: string; webhookUrl: string;
     webhookType: 'slack' | 'discord' | 'custom';
-    threshold429Pct: number;
-    thresholdSpikePct: number;
-    thresholdNearLimitPct: number;
-    enabled: boolean;
+    threshold429Pct: number; thresholdSpikePct: number;
+    thresholdNearLimitPct: number; enabled: boolean;
   }) {
     return this.request<{ alert: any }>('/api/alerts', {
       method: 'POST',
@@ -309,17 +371,15 @@ class ApiClient {
     });
   }
 
-  // ── Auto IP Blocking (Pro) ───────────────────────────────────────────────────
+  // ── Auto IP Blocking (Pro) ─────────────────────────────────────────────────
 
   async getAutoBlockSettings(apiKeyId: number) {
     return this.request<{ settings: any; migrationRequired?: boolean }>(`/api/autoblock/${apiKeyId}/settings`);
   }
 
   async saveAutoBlockSettings(apiKeyId: number, settings: {
-    enabled: boolean;
-    violations_threshold: number;
-    violations_window_minutes: number;
-    block_duration_minutes: number;
+    enabled: boolean; violations_threshold: number;
+    violations_window_minutes: number; block_duration_minutes: number;
   }) {
     return this.request<{ message: string }>(`/api/autoblock/${apiKeyId}/settings`, {
       method: 'PUT',
@@ -346,13 +406,15 @@ class ApiClient {
     });
   }
 
-  // ── Scheduled Reports (Pro) ──────────────────────────────────────────
+  // ── Scheduled Reports (Pro) ────────────────────────────────────────────────
 
   async getReportSchedule(apiKeyId: number) {
     return this.request<{ schedule: any; migrationRequired?: boolean }>(`/api/reports/${apiKeyId}/schedule`);
   }
 
-  async saveReportSchedule(apiKeyId: number, data: { reportEmail: string; frequency: 'daily' | 'weekly' | 'monthly'; enabled: boolean }) {
+  async saveReportSchedule(apiKeyId: number, data: {
+    reportEmail: string; frequency: 'daily' | 'weekly' | 'monthly'; enabled: boolean;
+  }) {
     return this.request<{ message: string }>(`/api/reports/${apiKeyId}/schedule`, {
       method: 'PUT',
       body: JSON.stringify(data),
